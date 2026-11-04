@@ -78,13 +78,15 @@ export async function renderTV(root, code) {
     render();
   });
 
-  function say(lines, mood) {
+  // showCaption=false: 화면에 이미 글이 있는 장면(이야기)에서는 자막을 겹쳐 쓰지 않는다
+  function say(lines, mood, showCaption = true) {
     const my = ++speakToken;
     stopSpeech();
     (async () => {
       for (const line of lines) {
         if (my !== speakToken || destroyed) return;
-        caption.textContent = line;
+        caption.textContent = showCaption ? line : '';
+        caption.classList.toggle('long', showCaption && line.length > 40);
         chr.startTalking();
         if (mood) chr.setMood(mood, 2500);
         await speak(line, (pack && pack.character && pack.character.voice) || {});
@@ -129,7 +131,7 @@ export async function renderTV(root, code) {
       speakKey = sk;
       const vars = storyVars(pack, state);
       if (confirmed) say([renderTemplate(step.on_confirm || '', vars)], 'happy');
-      else if (step.type === 'story') say([renderTemplate(step.template, vars)], 'think');
+      else if (step.type === 'story') say([renderTemplate(step.template, vars)], 'think', false);
       else say(step.lines || []);
     } else if (state.phase === 'done' && sk !== speakKey) {
       speakKey = sk;
