@@ -107,6 +107,7 @@ export default {
   'parent.joined_one': '1 child joined',
   'parent.homeTitle': 'Keep it going at home',
   'parent.noteDefault': 'This page shows only class totals and the class story.',
+  'parent.print': 'Print',
 
   // ---- v0.2: 기능마다 자기 구역 안에만 키를 넣는다 / each feature adds keys only inside its own block ----
 
