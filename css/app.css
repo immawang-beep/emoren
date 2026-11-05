@@ -234,3 +234,30 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
 
 /* ---------- kiosk: 키오스크 ---------- */
 /* [end kiosk] */
+
+/* ---------- print: 보호자 페이지 인쇄·PDF 저장 / family page print & save-as-PDF ---------- */
+.parent .asof-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media print {
+  @page { margin: 16mm 14mm; }
+  body[data-view="parent"] {
+    --bg: #FFFFFF; --surface: #FFFFFF; --fg: #000000; --muted: #444444; --line: #BBBBBB;
+    background: #fff; color: #000; color-scheme: light; font-size: 12pt;
+  }
+  body[data-view="parent"] main.parent { max-width: none; padding: 0; gap: 12px; }
+  body[data-view="parent"] .foot,
+  body[data-view="parent"] [data-print],
+  body[data-view="parent"] .brand .langs,
+  body[data-view="parent"] .brand button,
+  body[data-view="parent"] .brand a,
+  body[data-view="parent"] .brand-row .btn { display: none !important; }
+  body[data-view="parent"] a[href]::after { content: none !important; }
+  body[data-view="parent"] a { color: inherit; text-decoration: none; }
+  body[data-view="parent"] .card,
+  body[data-view="parent"] .story,
+  body[data-view="parent"] .book-stack .page { break-inside: avoid; page-break-inside: avoid; }
+  body[data-view="parent"] h1,
+  body[data-view="parent"] .card .h { break-after: avoid; page-break-after: avoid; }
+  body[data-view="parent"] .summary-bars .track,
+  body[data-view="parent"] .summary-bars .track i { -webkit-print-color-adjust: exact; print-color-adjust: exact; transition: none; }
+}
+/* [end print] */
