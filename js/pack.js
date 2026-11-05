@@ -6,7 +6,7 @@ import { getLang } from './i18n.js';
 const cache = new Map();      // `${id}.${lang}` → pack
 let indexPromise = null;
 export const DEFAULT_PACK = 'mind-weather';
-const STEP_TYPES = ['talk', 'choice', 'activity', 'story', 'closing'];
+export const STEP_TYPES = ['talk', 'choice', 'activity', 'story', 'book', 'closing'];
 
 const safeId = (id) => String(id || '').replace(/[^a-z0-9-]/gi, '').toLowerCase();
 const safeLang = (lang) => String(lang || '').replace(/[^a-z-]/gi, '').toLowerCase().split('-')[0];
@@ -84,6 +84,7 @@ export function validatePack(p) {
   if (!p.title) errs.push('title 없음 / missing title');
   if (!Array.isArray(p.steps) || p.steps.length === 0) errs.push('steps 비어 있음 / steps empty');
   const ids = new Set();
+  let books = 0;
   for (const s of p.steps || []) {
     if (!s.id) errs.push('단계 id 없음 / missing step id');
     else if (ids.has(s.id)) errs.push(`단계 id 중복 / duplicate step id: ${s.id}`);
@@ -102,6 +103,12 @@ export function validatePack(p) {
     }
     if (s.type === 'activity' && !(Number(s.timer_sec) > 0)) errs.push(`timer_sec 필요 / timer_sec required: ${s.id}`);
     if (s.type === 'story' && !s.template) errs.push(`template 없음 / missing template: ${s.id}`);
+    if (s.type === 'book') {
+      // 「오늘 우리 반 책」: 쪽은 상태에서 만든다. 팩에는 제목과 앞·뒤표지 한 줄만 / pages are built from state
+      if (!s.title) errs.push(`title 없음 / missing title: ${s.id}`);
+      for (const k of ['cover_line', 'back_line']) if (s[k] != null && typeof s[k] !== 'string') errs.push(`${k}는 문자열 / ${k} must be a string: ${s.id}`);
+      if (books++) errs.push(`book 단계는 하나만 / only one book step: ${s.id}`);
+    }
   }
   if (errs.length) throw new Error('수업팩 형식 오류 / pack format error: ' + errs.join(', '));
   return true;

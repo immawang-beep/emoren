@@ -101,4 +101,24 @@ export default {
   'parent.joined': '{n}명이 함께했어요',
   'parent.homeTitle': '집에서 이어가기',
   'parent.noteDefault': '이 페이지에는 반 전체의 숫자와 이야기만 있어요.',
+
+  // ---- v0.2: 기능마다 자기 구역 안에만 키를 넣는다 / each feature adds keys only inside its own block ----
+
+  // demo.* — 플레이그라운드 #demo / playground
+  // [end demo]
+
+  // book.* — 오늘 우리 반 책 / class book
+  // [end book]
+
+  // qr.* — TV 대기 화면 QR / TV waiting-screen QR
+  // [end qr]
+
+  // studio.* — 수업팩 스튜디오 #studio / pack studio
+  // [end studio]
+
+  // record.* — 남는 기록 패널 / what-is-stored panel
+  // [end record]
+
+  // kiosk.* — 효과음·키오스크·시계 / sfx, kiosk, clock
+  // [end kiosk]
 };

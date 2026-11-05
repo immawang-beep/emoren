@@ -1,12 +1,36 @@
 // 서비스워커: 네트워크 우선, 끊기면 캐시. 교실 와이파이가 흔들려도 화면은 뜬다.
-const CACHE = 'emoren-classroom-v2';
+const CACHE = 'emoren-classroom-v3';
 const SHELL = [
-  './', 'index.html', 'manifest.webmanifest', 'css/app.css', 'assets/icon.svg',
-  'js/app.js', 'js/util.js', 'js/store.js', 'js/pack.js', 'js/i18n.js', 'js/locales/ko.js', 'js/locales/en.js',
-  'js/sync/index.js', 'js/sync/local.js', 'js/sync/artifactdb.js', 'js/sync/firebase.js',
-  'js/ui/character.js', 'js/ui/speech.js',
-  'js/views/home.js', 'js/views/teacher.js', 'js/views/tv.js', 'js/views/parent.js',
-  'packs/index.json', 'packs/mind-weather.ko.json', 'packs/mind-weather.en.json',
+  // 한 줄에 파일 하나, 알파벳 순 / one file per line, sorted (tests/unit/shell.test.mjs가 검사)
+  './',
+  'index.html',
+  'assets/icon.svg',
+  'css/app.css',
+  'js/app.js',
+  'js/clock.js',
+  'js/i18n.js',
+  'js/locales/en.js',
+  'js/locales/ko.js',
+  'js/pack.js',
+  'js/route.js',
+  'js/store.js',
+  'js/sync/artifactdb.js',
+  'js/sync/firebase.js',
+  'js/sync/index.js',
+  'js/sync/local.js',
+  'js/ui/character.js',
+  'js/ui/speech.js',
+  'js/util.js',
+  'js/views/demo.js',
+  'js/views/home.js',
+  'js/views/parent.js',
+  'js/views/studio.js',
+  'js/views/teacher.js',
+  'js/views/tv.js',
+  'manifest.webmanifest',
+  'packs/index.json',
+  'packs/mind-weather.en.json',
+  'packs/mind-weather.ko.json',
 ];
 
 self.addEventListener('install', (e) => {

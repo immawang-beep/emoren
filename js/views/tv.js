@@ -7,10 +7,13 @@ import { currentStep, tallyFor, leadOption, storyVars, renderTemplate, summaryOf
 import { createCharacter } from '../ui/character.js';
 import { speak, stop as stopSpeech, unlock, isUnlocked, canSpeak } from '../ui/speech.js';
 import { t, getLang, setLang } from '../i18n.js';
+import { createClock } from '../clock.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function renderTV(root, code) {
+// opts.sync      동기화 방식 강제('local' 등) / force a sync adapter
+// opts.embedded  다른 화면(#demo) 안에 끼워 넣었을 때: 문서 제목·전체 화면을 건드리지 않는다
+export async function renderTV(root, code, opts = {}) {
   if (!code) { location.replace('#tv-' + makeCode()); return { destroy() {} }; }
   root.innerHTML = `
   <div class="stage-wrap">
@@ -42,10 +45,11 @@ export async function renderTV(root, code) {
   let timerTick = null;
   let destroyed = false;
   let sync = null;
+  const clock = createClock();
 
   // 화면 언어에 따라 바뀌는 고정 요소(제목, 소리 버튼, 동기화 배지) / chrome strings that follow the UI language
   function applyChrome() {
-    document.title = t('tv.title', { code });
+    if (!opts.embedded) document.title = t('tv.title', { code });
     unlockBtn.textContent = canSpeak() ? t('tv.unlock') : t('tv.fullscreen');
     if (sync) syncBadge.textContent = SYNC_LABEL[sync.kind] || sync.kind;
     const step = state && pack && state.phase !== 'waiting' && state.phase !== 'done' ? currentStep(pack, state) : null;
@@ -53,7 +57,7 @@ export async function renderTV(root, code) {
   }
   applyChrome();
 
-  sync = await createSync(code);
+  sync = await createSync(code, { prefer: opts.sync });
   applyChrome();
 
   let pending = null;
@@ -71,6 +75,7 @@ export async function renderTV(root, code) {
           if (pack.lang && pack.lang !== getLang()) setLang(pack.lang, { persist: false });
           chr = createCharacter(slot, pack.character || {});
         }
+        clock.observe(next);
         state = next;
         render();
       }
@@ -84,7 +89,7 @@ export async function renderTV(root, code) {
   unlockBtn.addEventListener('click', () => {
     unlock((pack && pack.lang) || getLang());
     unlockBtn.hidden = true;
-    try { if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); } catch { /* 전체 화면 불가 */ }
+    if (!opts.embedded) { try { if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); } catch { /* 전체 화면 불가 */ } }
     speakKey = null; // 지금 단계 대사를 소리로 다시 들려준다
     render();
   });
@@ -246,7 +251,7 @@ export async function renderTV(root, code) {
     const left = sceneEl.querySelector('[data-tleft]');
     const c = ring ? Number(ring.getAttribute('stroke-dasharray')) : 0;
     const tick = () => {
-      const rem = Math.max(0, t.seconds - (Date.now() - t.startedAt) / 1000);
+      const rem = Math.max(0, t.seconds - (clock.now() - t.startedAt) / 1000);
       if (left) left.textContent = Math.ceil(rem);
       if (ring) ring.style.strokeDashoffset = (c * (1 - rem / t.seconds)).toFixed(1);
       if (rem <= 0) {

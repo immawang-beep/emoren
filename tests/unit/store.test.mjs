@@ -175,3 +175,18 @@ test('reset은 같은 코드로 새 방을 만든다', () => {
   assert.equal(s.code, 'DEMO');
   assert.equal(s.rev, 0);
 });
+
+test('book 단계: 형식 검사(제목 필수, 한 팩에 하나, 표지 문구는 문자열)', () => {
+  const base = { id: 'x', lang: 'ko', title: 'x' };
+  const talk = { id: 'a', type: 'talk', lines: ['안녕'] };
+  assert.equal(validatePack({ ...base, steps: [talk, { id: 'book', type: 'book', title: '책', cover_line: '앞', back_line: '뒤' }] }), true);
+  assert.equal(validatePack({ ...base, steps: [talk, { id: 'book', type: 'book', title: '책' }] }), true, '표지 문구는 선택');
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'book', type: 'book' }] }), /title/);
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'b1', type: 'book', title: '1' }, { id: 'b2', type: 'book', title: '2' }] }), /하나만/);
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'book', type: 'book', title: '책', cover_line: 3 }] }), /cover_line/);
+  for (const p of [pack, packEn]) {
+    const i = p.steps.findIndex((s) => s.type === 'book');
+    assert.ok(i > 0, `${p.lang}: book 단계가 있다`);
+    assert.equal(p.steps[i + 1].type, 'closing', `${p.lang}: book은 마무리 바로 앞`);
+  }
+});

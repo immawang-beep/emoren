@@ -6,9 +6,10 @@ import { createSync } from '../sync/index.js';
 import { storyVars, renderTemplate, summaryOf } from '../store.js';
 import { t, getLang, setLang } from '../i18n.js';
 
-export async function renderParent(root, code) {
+// opts.sync  동기화 방식 강제 / force a sync adapter
+export async function renderParent(root, code, opts = {}) {
   if (!code) { location.replace('#'); return { destroy() {} }; }
-  const sync = await createSync(code);
+  const sync = await createSync(code, { prefer: opts.sync });
   let state = await sync.get();
   let pack = null;
   let destroyed = false;

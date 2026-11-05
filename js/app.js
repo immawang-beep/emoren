@@ -3,11 +3,18 @@
 //   #tv-CODE          교실 TV 무대     (#tv 만 쓰면 새 코드를 만든다)
 //   #teacher-CODE     강사 폰 리모컨
 //   #parent-CODE      보호자 페이지
-import { esc, normalizeCode } from './util.js';
+//   #demo             플레이그라운드: TV + 강사 폰을 한 화면에, 유령 선생님 자동 진행
+//   #demo-LANG        (예: #demo-en) 그 언어 수업팩으로
+//   #demo-LANG-PACKID (예: #demo-en-mind-weather, #demo-ko-studio-draft)
+//   #studio           수업팩 스튜디오(코드 없이 팩 만들기)
+import { esc } from './util.js';
+import { parseHash } from './route.js';
 import { renderHome } from './views/home.js';
 import { renderTeacher } from './views/teacher.js';
 import { renderTV } from './views/tv.js';
 import { renderParent } from './views/parent.js';
+import { renderDemo } from './views/demo.js';
+import { renderStudio } from './views/studio.js';
 import { t, getLang } from './i18n.js';
 
 const app = document.getElementById('app');
@@ -15,26 +22,21 @@ document.documentElement.lang = getLang();
 let current = null;
 let routeSeq = 0;
 
-export function parseHash(hash) {
-  const h = String(hash || '').replace(/^#/, '');
-  const m = h.match(/^(tv|teacher|parent)-([A-Za-z0-9]{3,8})$/);
-  if (m) return { view: m[1], code: normalizeCode(m[2]) };
-  if (h === 'tv' || h === 'teacher' || h === 'parent') return { view: h, code: null };
-  return { view: 'home', code: null };
-}
-
 async function route() {
   const seq = ++routeSeq;
   if (current && current.destroy) { try { current.destroy(); } catch (e) { console.warn(e); } }
   current = null;
   app.innerHTML = '';
-  const { view, code } = parseHash(location.hash);
+  const parsed = parseHash(location.hash);
+  const { view, code } = parsed;
   document.body.dataset.view = view;
   try {
     let next;
     if (view === 'tv') next = await renderTV(app, code);
     else if (view === 'teacher') next = await renderTeacher(app, code);
     else if (view === 'parent') next = await renderParent(app, code);
+    else if (view === 'demo') next = await renderDemo(app, { lang: parsed.lang, packId: parsed.packId });
+    else if (view === 'studio') next = await renderStudio(app);
     else next = await renderHome(app);
     if (seq !== routeSeq) { if (next && next.destroy) next.destroy(); return; }
     current = next;
