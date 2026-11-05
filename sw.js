@@ -28,9 +28,13 @@ const SHELL = [
   'js/views/teacher.js',
   'js/views/tv.js',
   'manifest.webmanifest',
+  'packs/feeling-guess.en.json',
+  'packs/feeling-guess.ko.json',
   'packs/index.json',
   'packs/mind-weather.en.json',
   'packs/mind-weather.ko.json',
+  'packs/traffic-light.en.json',
+  'packs/traffic-light.ko.json',
 ];
 
 self.addEventListener('install', (e) => {

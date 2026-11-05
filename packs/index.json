@@ -6,6 +6,20 @@
         "ko": { "title": "오늘의 마음 날씨", "domain": "정서 알아차리기", "age": "만 4~5세", "minutes": 15 },
         "en": { "title": "Mood Weather", "domain": "Noticing feelings", "age": "Ages 4–5", "minutes": 15 }
       }
+    },
+    {
+      "id": "feeling-guess",
+      "langs": {
+        "ko": { "title": "친구 마음 알아맞히기", "domain": "공감", "age": "만 4~5세", "minutes": 15 },
+        "en": { "title": "Guess the Feeling", "domain": "Empathy", "age": "Ages 4–5", "minutes": 15 }
+      }
+    },
+    {
+      "id": "traffic-light",
+      "langs": {
+        "ko": { "title": "마음 신호등", "domain": "진정하기", "age": "만 4~5세", "minutes": 15 },
+        "en": { "title": "Feelings Traffic Light", "domain": "Calming down", "age": "Ages 4–5", "minutes": 15 }
+      }
     }
   ]
 }
