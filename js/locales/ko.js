@@ -105,6 +105,7 @@ export default {
   'parent.joined': '{n}명이 함께했어요',
   'parent.homeTitle': '집에서 이어가기',
   'parent.noteDefault': '이 페이지에는 반 전체의 숫자와 이야기만 있어요.',
+  'parent.print': '인쇄하기',
 
   // ---- v0.2: 기능마다 자기 구역 안에만 키를 넣는다 / each feature adds keys only inside its own block ----
 

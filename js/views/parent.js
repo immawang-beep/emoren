@@ -35,7 +35,8 @@ export async function renderParent(root, code, opts = {}) {
       const home = pack.home || {};
       body = `
       <h1>${esc(t('parent.heading', { title: pack.title }))}</h1>
-      <p class="asof">${esc(fmtDate(state.endedAt || state.updatedAt, getLang()))}${sum ? ` · ${esc(t('parent.joined', { n: sum.total }))}` : ''}</p>
+      <div class="asof-row"><p class="asof">${esc(fmtDate(state.endedAt || state.updatedAt, getLang()))}${sum ? ` · ${esc(t('parent.joined', { n: sum.total }))}` : ''}</p>
+        <button class="btn small" type="button" data-print>${esc(t('parent.print'))}</button></div>
       ${sum ? `<section class="card"><div class="h">${esc(sum.step.title)}</div><div class="summary-bars">${sum.rows.map((r) => `
         <div class="r"><span>${esc(r.emoji || '')} ${esc(r.label)}</span><div class="track"><i style="--c:${esc(r.color || '#16B364')};width:${r.pct}%"></i></div><span class="n">${r.n}</span></div>`).join('')}</div></section>` : ''}
       ${text ? `<p class="story">${esc(text)}</p>` : ''}
@@ -48,6 +49,9 @@ export async function renderParent(root, code, opts = {}) {
       ${body}
       <p class="foot"><a href="#">${esc(t('common.home'))}</a></p>
     </main>`;
+    // 인쇄·PDF 저장은 브라우저 인쇄 대화상자로 / print or save as PDF through the browser's print dialog
+    const printBtn = root.querySelector('[data-print]');
+    if (printBtn) printBtn.addEventListener('click', () => window.print());
   }
 
   const unsub = sync.subscribe((s) => { if (s && s.code === code) { state = s; render(); } });
