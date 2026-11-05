@@ -109,6 +109,20 @@ export default {
   // ---- v0.2: 기능마다 자기 구역 안에만 키를 넣는다 / each feature adds keys only inside its own block ----
 
   // demo.* — 플레이그라운드 #demo / playground
+  'demo.title': '플레이그라운드',
+  'demo.subtitle': '왼쪽은 교실 TV, 오른쪽은 강사 폰이에요. 둘 다 이 브라우저 안에서 같은 수업 코드로 움직여요.',
+  'demo.tvLabel': '교실 TV',
+  'demo.phoneLabel': '강사 폰',
+  'demo.packLabel': '수업팩',
+  'demo.ghostRun': '유령 선생님 시작',
+  'demo.ghostStop': '직접 하기',
+  'demo.ghostIdle': '유령 선생님이 준비됐어요. 누르면 수업 한 회기를 혼자 진행해요. 폰을 직접 누르면 언제든 멈춰요.',
+  'demo.ghostRunning': '유령 선생님이 진행 중 · {step}',
+  'demo.ghostStopped': '유령 선생님이 멈췄어요. 이제 폰을 직접 눌러 진행해 보세요.',
+  'demo.ghostDone': '수업 한 회기가 끝났어요. 보호자 페이지를 열어 보거나, 새 코드로 다시 볼 수 있어요.',
+  'demo.family': '보호자 페이지 열기',
+  'demo.replay': '새 코드로 다시 보기',
+  'demo.hint': '실제 수업에서는 TV와 폰이 다른 기기예요. 이 화면은 전체 흐름을 한눈에 보기 위한 것이에요.',
   // [end demo]
 
   // book.* — 오늘 우리 반 책 / class book
