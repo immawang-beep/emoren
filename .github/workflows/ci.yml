@@ -17,6 +17,8 @@ jobs:
           node-version: 22
       - name: Unit tests (node:test)
         run: npm test
+      - name: Lesson packs (packs:check)
+        run: npm run packs:check
       - name: Install Playwright (test-only dependency)
         run: |
           npm install --no-save playwright@1.63.0
