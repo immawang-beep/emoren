@@ -32,7 +32,7 @@ export async function renderHome(root) {
     <main class="page home">
       <header class="brand">
         <div class="brand-row">
-          <div class="logo">${esc(t('home.title'))}</div>
+          <h1 class="logo">${esc(t('home.title'))}</h1>
           <div class="langs" role="group" aria-label="${esc(t('common.language'))}">
             ${LANGS.map((l) => `<button class="pill" type="button" data-lang="${l}" aria-pressed="${l === lang}" title="${esc(langName(l))}">${l.toUpperCase()}</button>`).join('')}
           </div>
@@ -62,18 +62,20 @@ export async function renderHome(root) {
           </select>
         </label>` : ''}
         <form class="join" data-role="teacher">
-          <input name="code" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="8" placeholder="${esc(t('common.code'))}" value="${esc(last)}" aria-label="${esc(t('common.codeLabel'))}">
+          <label class="sr-only" for="code-teacher">${esc(t('common.codeLabel'))}</label>
+          <input id="code-teacher" name="code" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="8" placeholder="${esc(t('common.code'))}" value="${esc(last)}">
           <button class="btn green" type="submit">${esc(t('home.teacher.open'))}</button>
           <button class="btn ghost" type="button" data-new>${esc(t('home.teacher.new'))}</button>
         </form>
-        <div class="hint" data-newbox hidden></div>
+        <div class="hint" data-newbox aria-live="polite" hidden></div>
       </section>
 
       <section class="card">
         <h2>${esc(t('home.parent.title'))}</h2>
         <p>${esc(t('home.parent.desc'))}</p>
         <form class="join" data-role="parent">
-          <input name="code" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="8" placeholder="${esc(t('common.code'))}" aria-label="${esc(t('common.codeLabel'))}">
+          <label class="sr-only" for="code-parent">${esc(t('common.codeLabel'))}</label>
+          <input id="code-parent" name="code" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" maxlength="8" placeholder="${esc(t('common.code'))}">
           <button class="btn" type="submit">${esc(t('home.parent.open'))}</button>
         </form>
       </section>
