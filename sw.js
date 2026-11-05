@@ -22,6 +22,7 @@ const SHELL = [
   'js/sync/local.js',
   'js/ui/book.js',
   'js/ui/character.js',
+  'js/ui/record.js',
   'js/ui/speech.js',
   'js/util.js',
   'js/vendor/qr.js',
