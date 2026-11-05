@@ -134,10 +134,10 @@ export function storyVars(pack, s) {
     if (st.type !== 'choice') continue;
     const t = tallyFor(s, st.id);
     for (const o of st.options) vars[o.id] = t[o.id] || 0;
-    vars[st.id + '_total'] = total(t);
+    vars[st.id + '_total'] = st.options.reduce((n, o) => n + (Number(t[o.id]) || 0), 0);
     const list = st.options
       .filter((o) => (t[o.id] || 0) > 0)
-      .map((o) => item.replace(/\{label\}/g, o.label).replace(/\{n\}/g, String(t[o.id])))
+      .map((o) => item.replace(/\{(label|n)\}/g, (m, k) => (k === 'n' ? String(t[o.id]) : o.label)))
       .join(', ');
     vars[st.id + '_list'] = list || packText(pack, 'list_empty');
     const lead = leadOption(st, t);
