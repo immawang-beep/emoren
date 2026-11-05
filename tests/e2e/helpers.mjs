@@ -6,6 +6,7 @@
 //   h.watch(page, n)  페이지 오류·콘솔 오류를 모은다(끝에 실패로 센다)
 //   h.shot(page, f)   dist/shots/<f> 스크린샷 (SHOTS_DIR, SHOT_SCALE)
 //   h.log(...)        진행 출력
+//   T                 기본 대기(ms). 환경변수 E2E_TIMEOUT으로 바꾼다
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import fs from 'node:fs';
@@ -15,7 +16,8 @@ import { startServer } from '../../tools/serve.mjs';
 const require = createRequire(import.meta.url);
 
 export const ROOT = fileURLToPath(new URL('../..', import.meta.url));
-export const T = 6000;
+// 기본 대기 8초. 느린 기기·동시 실행에서는 E2E_TIMEOUT=15000 npm run e2e / default wait; raise under load
+export const T = Number(process.env.E2E_TIMEOUT || 8000);
 
 export async function createHarness() {
   const { chromium } = require('playwright');

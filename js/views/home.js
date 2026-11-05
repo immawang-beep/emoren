@@ -40,6 +40,12 @@ export async function renderHome(root) {
         <p class="tag">${esc(t('home.tagline'))}</p>
       </header>
 
+      <section class="card demo-card">
+        <h2>${esc(t('home.demo.title'))}</h2>
+        <p>${esc(t('home.demo.desc'))}</p>
+        <a class="btn primary wide" href="#demo-${esc(lang)}" data-demo>${esc(t('home.demo.open'))}</a>
+      </section>
+
       <section class="card">
         <h2>${esc(t('home.tv.title'))}</h2>
         <p>${esc(t('home.tv.desc'))}</p>
@@ -79,6 +85,7 @@ export async function renderHome(root) {
           return `<li><b>${esc(p.title)}</b> <span class="muted">· ${esc(p.domain)} · ${esc(p.age)} · ${esc(t('common.minutes', { n: p.minutes }))} · ${vs.map((c) => esc(langName(c.lang))).join(' / ')}</span></li>`;
         }).join('') || `<li class="muted">${esc(t('home.packs.loading'))}</li>`}</ol>
         <p class="hint">${t('home.packs.hint')}</p>
+        <a class="btn wide" href="#studio" data-studio>${esc(t('home.studio.open'))}</a>
       </section>
 
       <p class="foot">${esc(t('home.foot'))}</p>

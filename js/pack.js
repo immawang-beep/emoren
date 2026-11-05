@@ -46,7 +46,22 @@ export function pickPackLang(entry, want) {
   return langs[0];
 }
 
+// 스튜디오 초안: #studio가 localStorage(emoren.studio.draft)에 둔 팩을 id 'studio-draft'로 불러온다(TV 미리 보기용).
+// Studio draft: the pack #studio keeps in localStorage is loadable as id 'studio-draft' (for TV preview).
+export const STUDIO_DRAFT_ID = 'studio-draft';
+export const STUDIO_DRAFT_KEY = 'emoren.studio.draft';
+function readDraft() {
+  try {
+    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(STUDIO_DRAFT_KEY) : null;
+    if (!raw) return null;
+    const pack = JSON.parse(raw);
+    validatePack(pack);
+    return { ...pack, id: STUDIO_DRAFT_ID };
+  } catch (e) { console.warn('[pack] studio draft', e); return null; }
+}
+
 async function fetchPack(id, lang) {
+  if (id === STUDIO_DRAFT_ID) return readDraft();
   const key = `${id}.${lang}`;
   if (cache.has(key)) return cache.get(key);
   const res = await fetch(`packs/${id}.${lang}.json`);

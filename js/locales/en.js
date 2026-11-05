@@ -41,6 +41,10 @@ export default {
   'home.packs.title': 'Lesson packs',
   'home.packs.loading': 'Loading…',
   'home.packs.hint': 'A lesson pack is one <code>packs/&lt;id&gt;.&lt;lang&gt;.json</code> file that defines the whole lesson. Make a new lesson by editing JSON, not code.',
+  'home.demo.title': 'See it in 10 seconds',
+  'home.demo.desc': 'The classroom TV and the teacher phone side by side on one screen, with a ghost teacher running a whole lesson. No second device needed.',
+  'home.demo.open': 'Open the playground',
+  'home.studio.open': 'Make a new lesson in the pack studio',
   'home.foot': "No child's name or personal information is stored anywhere. Only class totals and the class story are kept.",
 
   // teacher phone
