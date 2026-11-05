@@ -116,7 +116,7 @@ export default async function a11y(h) {
   h.log('\n[5] 보호자 페이지(수업 끝)');
   const parent = await h.newPage(ctx, 'a11y-보호자', { phone: true });
   await parent.goto(`${h.base}/#parent-${CODE}`);
-  await parent.locator('.story').waitFor({ timeout: h.T });
+  await parent.locator('p.story').waitFor({ timeout: h.T });
   await h.check('보호자 · 폰 · 라이트', async () => { await light(parent); await audit(parent, 'parent phone light', { shot: 'a11y-parent-phone-light.png' }); });
   await h.check('보호자 · 폰 · 다크', async () => { await dark(parent); await audit(parent, 'parent phone dark', { shot: 'a11y-parent-phone-dark.png' }); });
   await parent.setViewportSize(DESKTOP);
