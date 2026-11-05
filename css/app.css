@@ -413,4 +413,6 @@ body[data-view="demo"] .stage { width: 100cqw; height: 56.25cqw; font-size: calc
 .brand h1.logo { margin: 0; font-weight: 400; }
 /* 화면에서는 숨기고 보조 기술에만 읽히는 글(입력칸 label) / visually hidden, read by assistive technology (input labels) */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+/* 책 쪽의 작은 머리글(.kicker)은 라이트 모드 종이 위에서 대비가 모자랐다 → 본문 잉크로 / book-page kicker: use body ink for AA contrast */
+.book-stack .kicker, .book .kicker { color: var(--fg); opacity: 1; }
 /* [end a11y] */
