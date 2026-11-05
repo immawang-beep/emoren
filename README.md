@@ -100,4 +100,4 @@ docs/                PACK-FORMAT.md
 
 공개 전에 정한다. 권장: 코드 MIT, 수업팩 내용(대사·이야기) CC BY-NC-SA.
 
-더멤버스 / 이모렌(emoren)
+이모렌(emoren) · 저작권 표시는 LICENSE, packs/LICENSE.md 참고

@@ -20,11 +20,15 @@ jobs:
         node: [20, 22]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 제약 린트가 최근 커밋 메시지도 본다 / the constraint lint also reads recent commit messages
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
       - name: Unit tests (node:test)
         run: npm test
+      - name: Constraint lint
+        run: npm run lint:constraints
       - name: Install Playwright (test-only dependency)
         run: |
           npm install --no-save playwright@1.63.0
