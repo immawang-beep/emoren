@@ -213,6 +213,17 @@ test('summaryOf: 선택 단계가 없으면 null, 있으면 첫 번째 선택 �
   assert.equal(sum2.rows[0].label, '해님', '선택지의 다른 필드도 함께 넘어온다');
 });
 
+test('summaryOf: 지금 팩에 없는(오래된) 선택지 id의 집계는 total에 넣지 않는다', () => {
+  const pack = twoChoice('ko');
+  // 팩을 고친 뒤 남은 예전 선택지처럼, 집계에 지금 선택지가 아닌 id가 끼어 있는 상태
+  // a stale option id left in the tallies, as after a pack edit; it must not inflate the total or add a row
+  const s = { ...newRoom('T', pack), tallies: { weather: { sunny: 1, rainy: 4, old: 7 } } };
+  const sum = summaryOf(pack, s);
+  assert.equal(sum.total, 5, '지금 선택지(sunny·rainy)만 센다');
+  assert.deepEqual(sum.rows.map((r) => [r.id, r.n, r.pct]), [['sunny', 1, 25], ['rainy', 4, 100]]);
+  assert.equal(summaryOf(pack, { ...s, tallies: { weather: { old: 7 } } }).total, 0, '오래된 id뿐이면 0');
+});
+
 // ---------- packText ----------
 
 test('packText: 기본값은 ko / en, 모르는 언어는 영어, lang 이 없으면 한국어', () => {
