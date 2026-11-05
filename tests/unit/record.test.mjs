@@ -95,13 +95,14 @@ test('checkRoom: 두 팩으로 수업 한 회기를 끝까지 돌려도 모든 �
     step('togglePause', (x) => actions.togglePause(x));
     step('next', (x) => actions.next(x, pack));
     step('startTimer', (x) => actions.startTimer(x, 'move', 60));
-    step('prev', (x) => actions.prev(x));
+    step('prev', (x) => actions.prev(x, pack));
     step('next', (x) => actions.next(x, pack));
+    step('bookPage', (x) => actions.bookPage(x, pack, 1));
     step('note', (x) => actions.note(x, 'x'.repeat(400)));
     step('note', (x) => actions.note(x, '비 카드가 많았다 <b>&</b>'));
     while (s.phase !== 'done') step('next', (x) => actions.next(x, pack));
     step('end', (x) => actions.end(x));
-    step('prev', (x) => actions.prev(x));
+    step('prev', (x) => actions.prev(x, pack));
     step('reset', (x) => actions.reset(x, pack));
   }
   // 새 액션이 생기면 이 흐름에도 넣어 상태 모양을 같이 지킨다 / a new action must join this flow (and ROOM_SHAPE if it adds state)
