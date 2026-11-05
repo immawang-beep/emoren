@@ -10,17 +10,23 @@ import { t, getLang } from '../i18n.js';
 
 const tt = t; // controlsFor() 안에서 지역변수 t(타이머)와 이름이 겹칠 때 쓰는 별칭
 
-export async function renderTeacher(root, code) {
+// opts.sync      동기화 방식 강제('local' 등) / force a sync adapter
+// opts.embedded  #demo 안에 끼워 넣었을 때: 문서 제목·마지막 코드 저장을 건드리지 않는다
+// opts.timerSec  몸놀이 타이머 길이 덮어쓰기(#demo의 짧은 타이머) / override activity timer length
+// opts.packId, opts.packLang  새 방을 만들 때 쓸 팩(없으면 홈에서 고른 팩)
+export async function renderTeacher(root, code, opts = {}) {
   if (!code) { location.replace('#'); return { destroy() {} }; }
-  writeLocal('emoren.lastCode', code);
-  document.title = t('teacher.title', { code });
+  if (!opts.embedded) {
+    writeLocal('emoren.lastCode', code);
+    document.title = t('teacher.title', { code });
+  }
 
-  const sync = await createSync(code);
+  const sync = await createSync(code, { prefer: opts.sync });
   let state = await sync.get();
   let pack;
   if (!state) {
     // 새 방: 홈에서 고른 팩·언어, 없으면 기기 UI 언어로 된 기본 팩(그 언어가 없으면 loadPack이 첫 언어로 대신한다)
-    pack = await loadPack(readLocal('emoren.pack', DEFAULT_PACK), readLocal('emoren.packLang', getLang()));
+    pack = await loadPack(opts.packId || readLocal('emoren.pack', DEFAULT_PACK), opts.packLang || readLocal('emoren.packLang', getLang()));
     state = stamp(newRoom(code, pack));
     await sync.set(state);
   } else {
@@ -211,7 +217,7 @@ export async function renderTeacher(root, code) {
         else if (act === 'pause') dispatch((s) => actions.togglePause(s));
         else if (act === 'respeak') dispatch((s) => actions.respeak(s));
         else if (act === 'confirm' && step) dispatch((s) => actions.confirm(s, step.id));
-        else if (act === 'timer' && step) dispatch((s) => actions.startTimer(s, step.id, step.timer_sec));
+        else if (act === 'timer' && step) dispatch((s) => actions.startTimer(s, step.id, opts.timerSec || step.timer_sec));
         else if (act === 'reset') dispatch((s) => actions.reset(s, pack));
         else if (act === 'note') {
           const ta = root.querySelector('[data-note]');

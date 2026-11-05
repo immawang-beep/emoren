@@ -214,3 +214,23 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
   .chr .body, .chr .eyes, .chr.is-talking .mouth-open, .chr[data-mood="happy"] .body { animation: none; }
   .opt, .opt .bar i, .ring .fgc, .summary-bars .track i { transition: none; }
 }
+
+/* ==== v0.2: 기능마다 자기 구역 안에만 규칙을 넣는다 / each feature adds rules only inside its own block ==== */
+
+/* ---------- demo: 플레이그라운드 #demo ---------- */
+/* [end demo] */
+
+/* ---------- book: 오늘 우리 반 책 ---------- */
+/* [end book] */
+
+/* ---------- qr: TV 대기 화면 QR ---------- */
+/* [end qr] */
+
+/* ---------- studio: 수업팩 스튜디오 ---------- */
+/* [end studio] */
+
+/* ---------- record: 남는 기록 패널 ---------- */
+/* [end record] */
+
+/* ---------- kiosk: 키오스크 ---------- */
+/* [end kiosk] */

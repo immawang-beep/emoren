@@ -71,6 +71,14 @@
       "template": "Today the sky over {class} had {weather_list}. [[weather_lead: {weather_lead} was the biggest of all.]] Weather changes every day. What mood weather will visit tomorrow? Whatever the weather, the friends in {class} will be each other's umbrellas."
     },
     {
+      "id": "book",
+      "type": "book",
+      "title": "Our Class Book",
+      "cue": "The TV turns into a picture book of what our class made today and reads it page by page. When it's done, tap Next.",
+      "cover_line": "Here is the book our class made today.",
+      "back_line": "Our class made this together."
+    },
+    {
       "id": "bye",
       "type": "closing",
       "title": "Goodbye",
