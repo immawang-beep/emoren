@@ -234,3 +234,23 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
 
 /* ---------- kiosk: 키오스크 ---------- */
 /* [end kiosk] */
+
+/* ---------- a11y: 접근성(대비 · 보조 기술) ---------- */
+/* 밝은 포인트색(핑크·그린) 채움 위의 글자는 흰색 대신 진한 잉크를 쓴다. 흰 글자는 핑크·그린 모두에서 약 2.7:1로
+   WCAG AA(4.5:1)에 못 미치고, 이 잉크는 네 가지 포인트색(라이트·다크) 모두에서 5.4:1 이상이다. 채움색은 그대로라
+   핑크·그린 정체성은 유지된다. / Dark ink instead of white on the bright accent fills: white is ~2.7:1 on both pink
+   and green (below AA 4.5:1); this ink is ≥ 5.4:1 on all four accent shades. The fills stay pink / green. */
+:root {
+  --on-accent: #2B2622;
+  /* 라이트 모드 --muted를 조금 진하게: 초록빛 .cue 상자 위 13px .eyebrow가 4.4:1이었다 → 5.0:1(--bg 위 5.4:1). 다크 값은 그대로.
+     Slightly darker light-mode --muted: the 13px .eyebrow on the green-tinted .cue box was 4.4:1 → 5.0:1 (5.4:1 on --bg). */
+  --muted: #71655D;
+}
+.btn.primary, .btn.green, .langs .pill[aria-pressed="true"], .pausetag, .unlock { color: var(--on-accent); }
+/* 포커스 링: 라이트 모드의 --green은 --bg 위에서 2.6:1이라 잘 안 보인다 → 진한 초록(4.2:1) / darker focus ring, 4.2:1 on light --bg */
+:focus-visible { outline-color: var(--green-deep); }
+/* 홈 브랜드는 <h1>: 로고 모양은 그대로, 브라우저 기본 여백·굵기만 끈다 / the brand <h1> keeps the logo look */
+.brand h1.logo { margin: 0; font-weight: 400; }
+/* 화면에서는 숨기고 보조 기술에만 읽히는 글(입력칸 label) / visually hidden, read by assistive technology (input labels) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; border: 0; }
+/* [end a11y] */
