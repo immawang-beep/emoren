@@ -1,0 +1,37 @@
+# GitHub Pages: 저장소 루트를 그대로 올린다(빌드 없음). main에 푸시될 때와 수동 실행.
+# 첫 실행이 Pages를 켠다(enablement). 조직 정책이 Pages를 막으면 이 워크플로우만 실패하고 CI에는 영향이 없다.
+# Deploys the repository root as-is (no build) on push to main and on manual dispatch. See docs/DEPLOY.md.
+name: Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy repository root to GitHub Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
