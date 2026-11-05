@@ -121,6 +121,23 @@ export default {
   // [end studio]
 
   // record.* — 남는 기록 패널 / what-is-stored panel
+  'record.title': '남는 기록',
+  'record.intro': '아이 이름·사진·목소리·개인 선택은 어디에도 없어요. 이 방에 남는 건 아래가 전부예요.',
+  'record.counts': '반 전체 숫자',
+  'record.notes': '반 메모',
+  'record.story': '오늘 이야기',
+  'record.times': '시간',
+  'record.startedAt': '시작',
+  'record.endedAt': '끝',
+  'record.notYet': '아직',
+  'record.raw': '원본 JSON 보기',
+  'record.erase': '모두 지우기',
+  'record.eraseArmed': '정말 지울까요? 다시 누르면 지워져요',
+  'record.erased': '지웠어요. 같은 코드로 새 수업을 준비했어요.',
+  'record.pack': '수업팩',
+  'record.sync': '동기화',
+  'record.empty': '아직 아무것도 없어요',
+  'record.none': '메모 없음',
   // [end record]
 
   // kiosk.* — 효과음·키오스크·시계 / sfx, kiosk, clock

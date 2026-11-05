@@ -123,6 +123,23 @@ export default {
   // [end studio]
 
   // record.* — 남는 기록 패널 / what-is-stored panel
+  'record.title': 'What this room stores',
+  'record.intro': "No child's name, photo, voice or individual choice is anywhere in here. What you see below is everything.",
+  'record.counts': 'Class totals',
+  'record.notes': 'Class notes',
+  'record.story': "Today's story",
+  'record.times': 'Times',
+  'record.startedAt': 'Started',
+  'record.endedAt': 'Ended',
+  'record.notYet': 'not yet',
+  'record.raw': 'Show raw JSON',
+  'record.erase': 'Erase everything',
+  'record.eraseArmed': 'Erase for real? Tap again',
+  'record.erased': 'Erased. A fresh lesson is ready with the same code.',
+  'record.pack': 'Lesson pack',
+  'record.sync': 'Sync',
+  'record.empty': 'Nothing yet',
+  'record.none': 'No notes',
   // [end record]
 
   // kiosk.* — 효과음·키오스크·시계 / sfx, kiosk, clock
