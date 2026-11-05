@@ -224,6 +224,14 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
 /* [end book] */
 
 /* ---------- qr: TV 대기 화면 QR ---------- */
+/* 제목·코드는 왼쪽, QR은 오른쪽에 나란히, 안내문은 아래 전체 폭. 모든 크기는 무대 em(1280px에서 16px). */
+.wait { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "title qr" "code qr" "sub sub"; column-gap: 2.4em; align-items: center; }
+.wait h1 { grid-area: title; align-self: end; }
+.wait .bigcode { grid-area: code; align-self: start; }
+.wait .sub { grid-area: sub; margin-top: 1.1em; word-break: keep-all; }
+.wait .qrbox { grid-area: qr; display: grid; justify-items: center; gap: .6em; justify-self: end; }
+.wait .qrbox svg { display: block; width: 14em; height: 14em; border-radius: .6em; box-shadow: 0 .5em 1.4em rgba(40, 60, 90, .16); }
+.wait .qrlabel { margin: 0; max-width: 15em; text-align: center; text-wrap: balance; font-family: var(--font-body); font-size: 1.15em; line-height: 1.35; color: #4B5B6A; }
 /* [end qr] */
 
 /* ---------- studio: 수업팩 스튜디오 ---------- */
