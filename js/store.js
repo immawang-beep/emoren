@@ -88,7 +88,9 @@ export const actions = {
     return { ...s, phase: 'done', endedAt: Date.now(), timer: null, speakSeq: s.speakSeq + 1 };
   },
   note(s, text) {
-    const clean = String(text || '').trim().slice(0, 300);
+    // 300자에서 자른 뒤 다시 다듬는다: 자른 자리의 공백과 반쪽 난 이모지(짝 잃은 서러게이트)를 떼어 낸다.
+    // Re-trim after the 300-char cut and drop the half emoji (lone high surrogate) the cut may leave behind.
+    const clean = String(text || '').trim().slice(0, 300).replace(/[\uD800-\uDBFF]$/, '').trim();
     if (!clean) return s;
     return { ...s, notes: [...s.notes, { t: Date.now(), text: clean }] };
   },
