@@ -11,8 +11,14 @@ import { createClock } from '../clock.js';
 import { qrSvg } from '../vendor/qr.js';
 import { bookPages, currentBookPage } from '../book.js';
 import { renderBookPage } from '../ui/book.js';
+import { createSfx } from '../ui/sfx.js';
+import { createKiosk } from '../ui/kiosk.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// 효과음은 모듈에 하나(AudioContext도 하나). 'page'는 책용: 책 장면에서 쪽이 넘어갈 때 sfx.play('page')를 부른다.
+// One sfx per module (one AudioContext). 'page' is for the class book: call sfx.play('page') when its page turns.
+export const sfx = createSfx();
 
 // opts.sync      동기화 방식 강제('local' 등) / force a sync adapter
 // opts.embedded  다른 화면(#demo) 안에 끼워 넣었을 때: 문서 제목·전체 화면을 건드리지 않는다
@@ -27,7 +33,10 @@ export async function renderTV(root, code, opts = {}) {
         <div class="scene" data-scene></div>
       </div>
       <div class="caption" data-caption></div>
+      <div class="stage-ctl">
       <button class="unlock" type="button" data-unlock></button>
+      <button class="sfx" type="button" data-sfx aria-pressed="true"></button>
+      </div>
     </div>
   </div>`;
   const stage = root.querySelector('#stage');
@@ -35,7 +44,9 @@ export async function renderTV(root, code, opts = {}) {
   const caption = stage.querySelector('[data-caption]');
   const syncBadge = stage.querySelector('[data-sync]');
   const unlockBtn = stage.querySelector('[data-unlock]');
+  const sfxBtn = stage.querySelector('[data-sfx]');
   const slot = stage.querySelector('.chr-slot');
+  const kiosk = createKiosk(stage);
 
   let chr = createCharacter(slot, {});
   let pack = null;
@@ -51,10 +62,19 @@ export async function renderTV(root, code, opts = {}) {
   let sync = null;
   const clock = createClock();
 
+  // 효과음 토글 겉모습: 그림(🔈/🔇)과 이름이 상태·언어를 따른다 / sfx toggle look follows state and UI language
+  function applySfxBtn() {
+    sfxBtn.textContent = sfx.enabled ? '🔈' : '🔇';
+    sfxBtn.setAttribute('aria-pressed', String(sfx.enabled));
+    sfxBtn.setAttribute('aria-label', t(sfx.enabled ? 'tv.sfxOn' : 'tv.sfxOff'));
+    sfxBtn.title = t(sfx.enabled ? 'tv.sfxOn' : 'tv.sfxOff');
+  }
+
   // 화면 언어에 따라 바뀌는 고정 요소(제목, 소리 버튼, 동기화 배지) / chrome strings that follow the UI language
   function applyChrome() {
     if (!opts.embedded) document.title = t('tv.title', { code });
     unlockBtn.textContent = canSpeak() ? t('tv.unlock') : t('tv.fullscreen');
+    applySfxBtn();
     if (sync) syncBadge.textContent = SYNC_LABEL[sync.kind] || sync.kind;
     const step = state && pack && state.phase !== 'waiting' && state.phase !== 'done' ? currentStep(pack, state) : null;
     stage.querySelector('.ttl').textContent = pack ? `${pack.title}${step ? ` · ${state.stepIndex + 1}/${pack.steps.length} ${step.title}` : ''}` : t('common.appName');
@@ -92,10 +112,19 @@ export async function renderTV(root, code, opts = {}) {
 
   unlockBtn.addEventListener('click', () => {
     unlock((pack && pack.lang) || getLang());
+    sfx.unlock();
     unlockBtn.hidden = true;
     if (!opts.embedded) { try { if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); } catch { /* 전체 화면 불가 */ } }
+    if (!opts.embedded) kiosk.enter();
     speakKey = null; // 지금 단계 대사를 소리로 다시 들려준다
     render();
+  });
+
+  // 효과음 켜고 끄기(저장된다). 켤 때 작은 똑 소리로 들리는지 바로 알린다 / toggle + persist; a tick confirms it works
+  sfxBtn.addEventListener('click', () => {
+    sfx.setEnabled(!sfx.enabled);
+    if (sfx.enabled) { sfx.unlock(); sfx.play('page'); }
+    applySfxBtn();
   });
 
   // showCaption=false: 화면에 이미 글이 있는 장면(이야기)에서는 자막을 겹쳐 쓰지 않는다
@@ -159,7 +188,7 @@ export async function renderTV(root, code, opts = {}) {
     if (state.phase === 'live' && sk !== speakKey) {
       speakKey = sk;
       const vars = storyVars(pack, state);
-      if (confirmed) say([renderTemplate(step.on_confirm || '', vars)], 'happy');
+      if (confirmed) { sfx.play('confirm'); say([renderTemplate(step.on_confirm || '', vars)], 'happy'); }
       else if (step.type === 'story') say([renderTemplate(step.template, vars)], 'think', false);
       // 책: 쪽이 바뀔 때마다 그 쪽을 읽는다. 이야기 쪽은 글이 이미 화면에 있으니 자막 없이
       else if (book && book.page) say([book.page.line], book.page.kind === 'story' ? 'think' : 'happy', book.page.kind !== 'story');
@@ -203,6 +232,7 @@ export async function renderTV(root, code, opts = {}) {
       <h1>${pack ? esc(pack.title) : esc(t('common.appName'))}</h1>
       <div class="bigcode">${esc(code)}</div>
       <p class="sub">${esc(t('tv.waitStep1'))} &nbsp; ${esc(t('tv.waitStep2'))}</p>
+      ${!opts.embedded && document.fullscreenEnabled !== false ? `<p class="hint">${esc(t('tv.kioskHint'))}</p>` : ''}
       <div class="qrbox" data-qr>${qr}<p class="qrlabel">${esc(t('qr.scan'))}</p></div>
     </div>`;
   }
@@ -290,7 +320,7 @@ export async function renderTV(root, code, opts = {}) {
       if (rem <= 0) {
         clearInterval(timerTick);
         const k = `${step.id}|${t.startedAt}`;
-        if (timerDoneKey !== k) { timerDoneKey = k; if (step.done_line) say([step.done_line], 'happy'); }
+        if (timerDoneKey !== k) { timerDoneKey = k; sfx.play('timer'); if (step.done_line) say([step.done_line], 'happy'); }
       }
     };
     tick();
@@ -304,6 +334,7 @@ export async function renderTV(root, code, opts = {}) {
       clearInterval(bookTick);
       speakToken++;
       stopSpeech();
+      kiosk.destroy();
       unsub();
       sync.close();
     },

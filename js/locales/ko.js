@@ -167,5 +167,8 @@ export default {
   // [end record]
 
   // kiosk.* — 효과음·키오스크·시계 / sfx, kiosk, clock
+  'tv.sfxOn': '효과음 켜짐',
+  'tv.sfxOff': '효과음 꺼짐',
+  'tv.kioskHint': '화면을 두 번 누르면 전체 화면',
   // [end kiosk]
 };
