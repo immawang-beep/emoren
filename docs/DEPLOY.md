@@ -89,7 +89,7 @@ npm run build:artifact        # → dist/artifact.html + dist/artifact-files.jso
 | 6 | '잠깐' → '계속' | TV에 "잠깐 쉬어요 / Break time" 덮개가 덮였다가 걷힌다 |
 | 7 | '확정 → 캐릭터 반응' | 캐릭터가 반 전체 숫자로 말한다 |
 | 8 | 끝까지 진행해 '수업 마치기' | TV에 "오늘 수업 끝". 세 번째 기기(아무 네트워크)에서 `#parent-코드`를 열면 이야기와 막대가 있다. 수업 중에 미리 열어 두었다면 끝나는 순간 저절로 바뀐다 |
-| 9 | Firebase 콘솔 → Realtime Database → 데이터 → `rooms/<코드>` | 키가 `v` `code` `packId` `lang` `phase` `stepIndex` `tallies` `confirmed` `timer` `speakSeq` `startedAt` `endedAt` `notes` `rev` `updatedAt`뿐이다. 이름도, 개인 선택도 없다 |
+| 9 | Firebase 콘솔 → Realtime Database → 데이터 → `rooms/<코드>` | 키가 `v` `code` `packId` `lang` `phase` `stepIndex` `tallies` `confirmed` `timer` `speakSeq` `startedAt` `endedAt` `notes` `rev` `updatedAt` `book`뿐이다. 이름도, 개인 선택도 없다 |
 | 10 | 폰에서 '같은 코드로 새 수업 준비' | 문서가 빈 대기 방으로 덮어써진다(집계·이야기·메모가 사라진다). 키 자체는 남는다 → 아래 만료 |
 
 ### 콘솔에서 볼 줄 (배포본에서 F12)
