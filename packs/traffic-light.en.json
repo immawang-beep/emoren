@@ -1,0 +1,105 @@
+{
+  "id": "traffic-light",
+  "lang": "en",
+  "title": "Feelings Traffic Light",
+  "domain": "Calming down",
+  "age": "Ages 4–5",
+  "minutes": 15,
+  "goal": "When a feeling gets big, children choose for themselves which of three lights they need: stop, breathe or say.",
+  "materials": ["3 traffic-light cards (red, yellow, green, for the teacher)", "Classroom TV or big screen", "Teacher's smartphone"],
+  "character": { "name": "Joanne", "color": "#FF6B9D", "voice": { "rate": 0.95, "pitch": 1.2 } },
+  "list_item": "{n} {label}",
+  "list_empty": "no light yet",
+  "class_name": "our class",
+  "steps": [
+    {
+      "id": "hello",
+      "type": "talk",
+      "title": "Hello",
+      "heading": "Feelings have a traffic light!",
+      "cue": "Gather the children so they can see the TV. Each time the character names a light, hold up the matching card: red, yellow, green.",
+      "lines": [
+        "Hello, friends! I'm Joanne.",
+        "There's a traffic light for big feelings.",
+        "Red is Stop. Yellow is Breathe.",
+        "Green is Say! Let's try it today."
+      ]
+    },
+    {
+      "id": "signal",
+      "type": "choice",
+      "title": "The light I need",
+      "cue": "Ask the children to remember a time a feeling got big, then hold up the card for the light they need right now. Count each light and tap +. Once everyone is counted, tap Confirm.",
+      "prompt": "Which light do you need right now?",
+      "lines": [
+        "Think of a time a feeling got big.",
+        "Which light do you need right now?",
+        "Pick one card and hold it up!"
+      ],
+      "options": [
+        { "id": "stop", "label": "Stop", "emoji": "🔴", "color": "#E5484D", "hint": "pause and stay still for a moment" },
+        { "id": "breathe", "label": "Breathe", "emoji": "🟡", "color": "#F5B800", "hint": "slow breath in through the nose, out through the mouth" },
+        { "id": "say", "label": "Say", "emoji": "🟢", "color": "#16B364", "hint": "say 'this is how I feel right now'" }
+      ],
+      "on_confirm": "You chose {signal_list}. [[signal_lead: Most of you chose {signal_lead}.]] [[stop: Pausing for a moment is a big strength.]] [[breathe: Your breath is always with you.]] [[say: Saying it out loud makes a feeling lighter.]] Whatever the light, you are the one who chooses. Thank you for choosing."
+    },
+    {
+      "id": "breathe",
+      "type": "activity",
+      "title": "Breathing timer",
+      "heading": "Yellow light: slow breaths",
+      "cue": "Start the timer and name the moves slowly, one at a time. Take a big, visible breath first and the children will follow. When 30 seconds are up, the character wraps it up.",
+      "timer_sec": 30,
+      "lines": [
+        "Now it's the yellow light.",
+        "Let's breathe slowly together.",
+        "Follow your teacher. Ready?"
+      ],
+      "moves": [
+        { "emoji": "👃", "text": "Breathe in slowly through your nose" },
+        { "emoji": "💨", "text": "Breathe out long through your mouth" },
+        { "emoji": "🙆", "text": "Let your shoulders melt down" },
+        { "emoji": "🖐️", "text": "Squeeze your fists, then open your hands wide" }
+      ],
+      "done_line": "Whoosh. Is your feeling a little quieter now? Let's sit back down."
+    },
+    {
+      "id": "story",
+      "type": "story",
+      "title": "Our class story today",
+      "heading": "The lights our class chose",
+      "cue": "The character reads a story made from today's numbers. Afterwards, ask: 'Which light will you use when a feeling gets big?'",
+      "template": "Today {class} met the feelings traffic light. The lights our class chose: {signal_list}. [[signal_lead: {signal_lead} was chosen most of all.]] [[stop: Friends who chose Stop can pause for a moment when a feeling gets big.]] [[breathe: Friends who chose Breathe can take slow breaths through the nose.]] [[say: Friends who chose Say can tell someone, 'This is how I feel right now.']] Whatever the light, you choose it yourself. The traffic light is always with us."
+    },
+    {
+      "id": "book",
+      "type": "book",
+      "title": "Our Class Book",
+      "cue": "The TV turns into a picture book of the lights our class chose today and reads it page by page. When it's done, tap Next.",
+      "cover_line": "Here is a book of the lights our class chose today.",
+      "back_line": "Our class made this together."
+    },
+    {
+      "id": "bye",
+      "type": "closing",
+      "title": "Goodbye",
+      "heading": "Thank you for today!",
+      "cue": "When the character finishes saying goodbye, tap Finish lesson. The family page link will be ready.",
+      "lines": [
+        "Thank you for choosing your light today.",
+        "When a feeling gets big, remember the traffic light.",
+        "See you next time. Bye-bye!"
+      ]
+    }
+  ],
+  "outro": ["That's all for today! Thank you, friends."],
+  "home": {
+    "title": "Keep it going at home",
+    "tips": [
+      "When a feeling looks big, ask: 'Which light do you need right now? Red, yellow or green?' Whatever your child picks, do that light together.",
+      "The yellow light is easier when a grown-up goes first: breathe in slowly through the nose, then out long through the mouth.",
+      "When your child uses the green light and says 'This is how I feel,' answer with 'Thank you for telling me.' The traffic light is a tool your child chooses."
+    ],
+    "note": "This page shows only class totals and the class story. No individual child's choice is recorded."
+  }
+}

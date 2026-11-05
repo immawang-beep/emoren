@@ -1,0 +1,106 @@
+{
+  "id": "feeling-guess",
+  "lang": "en",
+  "title": "Guess the Feeling",
+  "domain": "Empathy",
+  "age": "Ages 4–5",
+  "minutes": 15,
+  "goal": "Children look at their teacher's face and body, notice which feeling it shows, and learn that friends' faces show feelings too.",
+  "materials": ["4 feeling cards (for the teacher)", "Classroom TV or big screen", "Teacher's smartphone"],
+  "character": { "name": "Joanne", "color": "#FF6B9D", "voice": { "rate": 0.95, "pitch": 1.2 } },
+  "list_item": "{n} {label}",
+  "list_empty": "a quiet face",
+  "class_name": "our class",
+  "steps": [
+    {
+      "id": "hello",
+      "type": "talk",
+      "title": "Hello",
+      "heading": "Feelings show on our faces!",
+      "cue": "Gather the children so they can see the TV. Wave along when the character says hello, and give a big smile on the last line.",
+      "lines": [
+        "Hello, friends! I'm Joanne.",
+        "Feelings peek out on our faces.",
+        "Today we'll look closely at your teacher's face.",
+        "Let's notice the feeling together!"
+      ]
+    },
+    {
+      "id": "guess",
+      "type": "choice",
+      "title": "Which feeling is it?",
+      "cue": "Pick one feeling card and make that face, big and clear. When the children raise their hands, count each feeling and tap +. Once everyone is counted, tap Confirm. Try another card if you like.",
+      "prompt": "Look at your teacher's face. Which feeling is it?",
+      "lines": [
+        "Look closely at your teacher's face.",
+        "Which feeling is it right now?",
+        "Raise your hand for the feeling you see!"
+      ],
+      "options": [
+        { "id": "happy", "label": "Happy", "emoji": "😊", "color": "#FFB443", "hint": "corners of the mouth up, eyes like half-moons" },
+        { "id": "sad", "label": "Sad", "emoji": "😢", "color": "#5BA4E6", "hint": "eyebrows down, mouth drooping" },
+        { "id": "angry", "label": "Angry", "emoji": "😠", "color": "#E5484D", "hint": "eyebrows pulled together, lips pressed" },
+        { "id": "scared", "label": "Scared", "emoji": "😨", "color": "#9DB4C8", "hint": "wide eyes, shoulders pulled up" }
+      ],
+      "on_confirm": "You noticed {guess_list}. [[guess_lead: Most of you saw {guess_lead}.]] [[sad: Thank you for noticing a sad face.]] [[angry: An angry face is a feeling too. Thank you for noticing it.]] [[scared: Thank you for noticing a scared feeling.]] When we look closely, faces show us feelings."
+    },
+    {
+      "id": "mimic",
+      "type": "activity",
+      "title": "Copy the face",
+      "heading": "Let's make feelings with our faces!",
+      "cue": "Start the timer and call out one feeling at a time. The children copy it with their faces and bodies. When 45 seconds are up, the character wraps it up.",
+      "timer_sec": 45,
+      "lines": [
+        "Now let's make feelings with our faces!",
+        "When your teacher says a feeling,",
+        "we become that face. Ready?"
+      ],
+      "moves": [
+        { "emoji": "😊", "text": "Happy: corners of your mouth up, eyes like half-moons" },
+        { "emoji": "😢", "text": "Sad: eyebrows down, let your mouth droop" },
+        { "emoji": "😠", "text": "Angry: pull your eyebrows together and cross your arms" },
+        { "emoji": "😨", "text": "Scared: big eyes, shoulders up to your ears" }
+      ],
+      "done_line": "Wow, every feeling showed up on our faces! Now let's sit back down."
+    },
+    {
+      "id": "story",
+      "type": "story",
+      "title": "Our class story today",
+      "heading": "The feelings our class noticed",
+      "cue": "The character reads a story made from today's numbers. Afterwards, ask: 'What could we do when a friend has a sad face?'",
+      "template": "Today {class} looked closely at a teacher's face. We thought about the feeling and raised our hands. Here is what we noticed: {guess_list}. [[guess_lead: Most friends saw {guess_lead}.]] Our friends' faces show feelings too: happy, sad, angry and scared. When we look closely and ask 'Are you okay?', a friend's heart feels a little warmer."
+    },
+    {
+      "id": "book",
+      "type": "book",
+      "title": "Our Class Book",
+      "cue": "The TV turns into a picture book of the feelings our class noticed today and reads it page by page. When it's done, tap Next.",
+      "cover_line": "Here is a book of the feelings our class noticed today.",
+      "back_line": "Our class made this together."
+    },
+    {
+      "id": "bye",
+      "type": "closing",
+      "title": "Goodbye",
+      "heading": "Thank you for today!",
+      "cue": "When the character finishes saying goodbye, tap Finish lesson. The family page link will be ready.",
+      "lines": [
+        "Thank you for noticing my feelings today.",
+        "At home, look closely at your family's faces too.",
+        "See you next time. Bye-bye!"
+      ]
+    }
+  ],
+  "outro": ["That's all for today! Thank you for looking so closely."],
+  "home": {
+    "title": "Keep it going at home",
+    "tips": [
+      "Make a face and ask, 'Look at me. Which feeling is this?' When your child names one, answer with 'That's how it looked to you.'",
+      "While reading a picture book, ask now and then, 'How is this character feeling?' Looking at the face and the body together makes it easier.",
+      "When your child shows a sad or angry face, say what you see first: 'You look sad.' Often, being noticed is enough."
+    ],
+    "note": "This page shows only class totals and the class story. No individual child's choice is recorded."
+  }
+}
