@@ -2,19 +2,38 @@
 // 강사 폰만 상태를 바꾸고(쓰기), TV와 보호자 페이지는 읽기만 한다.
 // 상태는 JSON 하나로 끝난다: 어떤 동기화 방식(같은 브라우저 / 클라우드 / Firebase)이든 그대로 실어 나른다.
 
+import { t } from './i18n.js';
+
 export const VERSION = 1;
 
-export const SYNC_LABEL = {
-  local: '같은 브라우저 동기화',
-  artifact: '클라우드 동기화',
-  firebase: 'Firebase 동기화',
+// 동기화 방식 이름. 현재 UI 언어를 따른다(getter) / adapter names in the current UI language.
+export const SYNC_LABEL = Object.freeze({
+  get local() { return t('sync.local'); },
+  get artifact() { return t('sync.artifact'); },
+  get firebase() { return t('sync.firebase'); },
+});
+
+// 수업팩이 생략한 이야기용 문구의 기본값(팩 언어 기준) / defaults for pack-language story text.
+//   list_item   {weather_list} 한 항목. {label}, {n}
+//   list_empty  아무도 고르지 않았을 때의 {weather_list}
+//   class_name  {class}
+export const PACK_TEXT_DEFAULTS = {
+  ko: { list_item: '{label} {n}명', list_empty: '조용한 하늘', class_name: '우리 반' },
+  en: { list_item: '{n} {label}', list_empty: 'a quiet sky', class_name: 'our class' },
 };
+
+export function packText(pack, key) {
+  if (pack && pack[key]) return String(pack[key]);
+  const lang = String((pack && pack.lang) || 'ko').slice(0, 2);
+  return (PACK_TEXT_DEFAULTS[lang] || PACK_TEXT_DEFAULTS.en)[key];
+}
 
 export function newRoom(code, pack) {
   return {
     v: VERSION,
     code,
     packId: pack.id,
+    lang: pack.lang || 'ko',   // 수업팩 언어(BCP-47 짧은 코드). TV·보호자 페이지 화면 언어가 이를 따른다.
     phase: 'waiting',        // waiting | live | paused | done
     stepIndex: 0,
     tallies: {},             // { [stepId]: { [optionId]: count } }
@@ -103,17 +122,22 @@ export function leadOption(step, t) {
 // 이야기 템플릿 변수: 모든 선택 단계의 집계 + {class}
 //   {sunny}            선택지별 개수
 //   {weather_total}    단계 합계
-//   {weather_list}     0이 아닌 선택지만 "해님 3명, 구름 2명" 꼴로
+//   {weather_list}     0이 아닌 선택지만 list_item 꼴로(ko "해님 3명, 구름 2명" / en "3 Sunny, 2 Cloudy"), 비면 list_empty
 //   {weather_lead}     가장 많은 선택지 이름(없으면 빈 문자열)
+//   {class}            class_name(ko "우리 반" / en "our class")
 export function storyVars(pack, s) {
-  const vars = { class: '우리 반' };
+  const item = packText(pack, 'list_item');
+  const vars = { class: packText(pack, 'class_name') };
   for (const st of pack.steps) {
     if (st.type !== 'choice') continue;
     const t = tallyFor(s, st.id);
     for (const o of st.options) vars[o.id] = t[o.id] || 0;
     vars[st.id + '_total'] = total(t);
-    const list = st.options.filter((o) => (t[o.id] || 0) > 0).map((o) => `${o.label} ${t[o.id]}명`).join(', ');
-    vars[st.id + '_list'] = list || '조용한 하늘';
+    const list = st.options
+      .filter((o) => (t[o.id] || 0) > 0)
+      .map((o) => item.replace(/\{label\}/g, o.label).replace(/\{n\}/g, String(t[o.id])))
+      .join(', ');
+    vars[st.id + '_list'] = list || packText(pack, 'list_empty');
     const lead = leadOption(st, t);
     vars[st.id + '_lead'] = lead ? st.options.find((o) => o.id === lead).label : '';
   }

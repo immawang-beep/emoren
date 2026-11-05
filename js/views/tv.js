@@ -6,23 +6,22 @@ import { createSync } from '../sync/index.js';
 import { currentStep, tallyFor, leadOption, storyVars, renderTemplate, summaryOf, SYNC_LABEL } from '../store.js';
 import { createCharacter } from '../ui/character.js';
 import { speak, stop as stopSpeech, unlock, isUnlocked, canSpeak } from '../ui/speech.js';
+import { t, getLang, setLang } from '../i18n.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export async function renderTV(root, code) {
   if (!code) { location.replace('#tv-' + makeCode()); return { destroy() {} }; }
-  document.title = `이모렌 교실 TV · ${code}`;
-
   root.innerHTML = `
   <div class="stage-wrap">
     <div class="stage" id="stage" aria-live="polite">
-      <div class="stage-top"><span class="ttl">이모렌 교실</span><span class="syncbadge" data-sync></span></div>
+      <div class="stage-top"><span class="ttl"></span><span class="syncbadge" data-sync></span></div>
       <div class="stage-body">
         <div class="chr-slot"></div>
         <div class="scene" data-scene></div>
       </div>
       <div class="caption" data-caption></div>
-      <button class="unlock" type="button" data-unlock>🔊 소리 켜기</button>
+      <button class="unlock" type="button" data-unlock></button>
     </div>
   </div>`;
   const stage = root.querySelector('#stage');
@@ -42,10 +41,20 @@ export async function renderTV(root, code) {
   let speakToken = 0;
   let timerTick = null;
   let destroyed = false;
-  if (!canSpeak()) unlockBtn.textContent = '⛶ 전체 화면';
+  let sync = null;
 
-  const sync = await createSync(code);
-  syncBadge.textContent = SYNC_LABEL[sync.kind] || sync.kind;
+  // 화면 언어에 따라 바뀌는 고정 요소(제목, 소리 버튼, 동기화 배지) / chrome strings that follow the UI language
+  function applyChrome() {
+    document.title = t('tv.title', { code });
+    unlockBtn.textContent = canSpeak() ? t('tv.unlock') : t('tv.fullscreen');
+    if (sync) syncBadge.textContent = SYNC_LABEL[sync.kind] || sync.kind;
+    const step = state && pack && state.phase !== 'waiting' && state.phase !== 'done' ? currentStep(pack, state) : null;
+    stage.querySelector('.ttl').textContent = pack ? `${pack.title}${step ? ` · ${state.stepIndex + 1}/${pack.steps.length} ${step.title}` : ''}` : t('common.appName');
+  }
+  applyChrome();
+
+  sync = await createSync(code);
+  applyChrome();
 
   let pending = null;
   let flushing = false;
@@ -56,8 +65,10 @@ export async function renderTV(root, code) {
     try {
       while (pending && !destroyed) {
         const next = pending; pending = null;
-        if (!pack || pack.id !== next.packId) {
-          pack = await loadPack(next.packId);
+        if (!pack || pack.id !== next.packId || (next.lang && pack.lang !== next.lang)) {
+          pack = await loadPack(next.packId, next.lang);
+          // 수업 언어를 따른다. 기기의 언어 설정은 바꾸지 않는다 / follow the lesson language, don't persist
+          if (pack.lang && pack.lang !== getLang()) setLang(pack.lang, { persist: false });
           chr = createCharacter(slot, pack.character || {});
         }
         state = next;
@@ -71,7 +82,7 @@ export async function renderTV(root, code) {
   if (first) await accept(first); else render();
 
   unlockBtn.addEventListener('click', () => {
-    unlock();
+    unlock((pack && pack.lang) || getLang());
     unlockBtn.hidden = true;
     try { if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); } catch { /* 전체 화면 불가 */ }
     speakKey = null; // 지금 단계 대사를 소리로 다시 들려준다
@@ -89,7 +100,7 @@ export async function renderTV(root, code) {
         caption.classList.toggle('long', showCaption && line.length > 40);
         chr.startTalking();
         if (mood) chr.setMood(mood, 2500);
-        await speak(line, (pack && pack.character && pack.character.voice) || {});
+        await speak(line, { ...((pack && pack.character && pack.character.voice) || {}), lang: (pack && pack.lang) || getLang() });
         if (my !== speakToken) return;
         chr.stopTalking();
         await wait(320);
@@ -101,7 +112,7 @@ export async function renderTV(root, code) {
     if (destroyed) return;
     if (!state) { setScene('waiting', waitingScene()); return; }
     const step = state.phase === 'waiting' || state.phase === 'done' ? null : currentStep(pack, state);
-    const key = `${state.phase}|${state.stepIndex}|${state.packId}`;
+    const key = `${state.phase}|${state.stepIndex}|${state.packId}|${pack.lang || state.lang || ''}`;
 
     if (state.phase === 'waiting') setScene(key, waitingScene());
     else if (state.phase === 'done') setScene(key, doneScene());
@@ -114,11 +125,11 @@ export async function renderTV(root, code) {
     // 일시정지 덮개
     let pause = stage.querySelector('.pause');
     if (state.phase === 'paused') {
-      if (!pause) { pause = document.createElement('div'); pause.className = 'pause'; pause.textContent = '잠깐 쉬어요'; stage.appendChild(pause); }
+      if (!pause) { pause = document.createElement('div'); pause.className = 'pause'; pause.textContent = t('tv.paused'); stage.appendChild(pause); }
       stopSpeech(); speakToken++; chr.stopTalking();
     } else if (pause) pause.remove();
 
-    stage.querySelector('.ttl').textContent = pack ? `${pack.title}${step ? ` · ${state.stepIndex + 1}/${pack.steps.length} ${step.title}` : ''}` : '이모렌 교실';
+    applyChrome();
 
     // 쉬었다 돌아오면 그 단계 대사를 처음부터 다시 들려준다
     if (lastPhase === 'paused' && state.phase === 'live') speakKey = null;
@@ -135,7 +146,7 @@ export async function renderTV(root, code) {
       else say(step.lines || []);
     } else if (state.phase === 'done' && sk !== speakKey) {
       speakKey = sk;
-      say(pack.outro || ['오늘 수업 끝! 고마워.'], 'happy');
+      say(pack.outro || [t('tv.outroDefault')], 'happy');
     } else if (state.phase === 'waiting') {
       speakKey = null; caption.textContent = '';
     }
@@ -152,9 +163,9 @@ export async function renderTV(root, code) {
   function waitingScene() {
     return `
     <div class="wait">
-      <h1>${pack ? esc(pack.title) : '이모렌 교실'}</h1>
+      <h1>${pack ? esc(pack.title) : esc(t('common.appName'))}</h1>
       <div class="bigcode">${esc(code)}</div>
-      <p class="sub">① 아래 '소리 켜기'를 한 번 누르세요 &nbsp; ② 강사 폰에서 이 코드를 넣고 수업을 시작하세요</p>
+      <p class="sub">${esc(t('tv.waitStep1'))} &nbsp; ${esc(t('tv.waitStep2'))}</p>
     </div>`;
   }
 
@@ -221,9 +232,9 @@ export async function renderTV(root, code) {
     const sum = summaryOf(pack, state);
     return `
     <div class="closing">
-      <h1>오늘 수업 끝!</h1>
+      <h1>${esc(t('tv.doneTitle'))}</h1>
       ${sum ? `<div class="chips">${sum.rows.map((r) => `<span class="chip">${esc(r.emoji || '')} ${esc(r.label)} ${r.n}</span>`).join('')}</div>` : ''}
-      <p class="sub">보호자 페이지에 오늘 이야기가 올라갔어요.</p>
+      <p class="sub">${esc(t('tv.doneSub'))}</p>
     </div>`;
   }
 

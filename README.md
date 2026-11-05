@@ -60,16 +60,16 @@ Firebase 경로는 아직 실제 프로젝트로 검증하지 않았다.
 
 ## 수업팩 만들기
 
-`packs/mind-weather.json`을 복사해 시작한다. 단계 유형은 다섯 가지(talk, choice, activity, story, closing), 이야기 템플릿은 `{sunny}`, `{weather_list}`, `[[rainy: …]]` 조건문을 쓴다. 자세한 설명은 [docs/PACK-FORMAT.md](docs/PACK-FORMAT.md).
+`packs/mind-weather.ko.json`(또는 `packs/mind-weather.en.json`)을 복사해 시작한다. 수업팩은 언어마다 한 장(`packs/<id>.<lang>.json`)이고, 홈 화면의 KO / EN 토글로 화면 언어를 바꾼다. 단계 유형은 다섯 가지(talk, choice, activity, story, closing), 이야기 템플릿은 `{sunny}`, `{weather_list}`, `[[rainy: …]]` 조건문을 쓴다. 자세한 설명은 [docs/PACK-FORMAT.md](docs/PACK-FORMAT.md).
 
 ## 테스트
 
 ```bash
-npm test          # 단위: 리듀서·템플릿·팩 검사 (node:test)
+npm test          # 단위: 리듀서·템플릿·팩 검사·i18n (node:test)
 npm run e2e       # 두 화면 시나리오 (Playwright, chromium 필요)
 ```
 
-두 화면 시나리오는 TV 탭과 강사 폰 탭을 한 브라우저에 열어 수업 한 회기를 끝까지 돌린다: 시작 → 집계 → TV 새로고침 복구 → 일시정지 → 확정 → 타이머 → 이야기 → 메모 → 끝 → 보호자 페이지 → 초기화. 스크린샷은 `dist/shots/`.
+두 화면 시나리오는 TV 탭과 강사 폰 탭을 한 브라우저에 열어 수업 한 회기를 끝까지 돌린다: 시작 → 집계 → TV 새로고침 복구 → 일시정지 → 확정 → 타이머 → 이야기 → 메모 → 끝 → 보호자 페이지 → 초기화. 이어서 홈의 KO / EN 토글과 영어 수업 한 회기(코드 ENGL)를 돈다. 스크린샷은 `dist/shots/`.
 
 ## 지키는 선
 
@@ -84,11 +84,13 @@ npm run e2e       # 두 화면 시나리오 (Playwright, chromium 필요)
 index.html  css/app.css  manifest.webmanifest  sw.js
 js/app.js            해시 라우터
 js/store.js          방 상태·리듀서·이야기 템플릿
-js/pack.js           수업팩 불러오기·형식 검사
+js/pack.js           수업팩 불러오기(언어별)·형식 검사
+js/i18n.js           화면 언어(ko/en): t(), setLang()
+js/locales/          ko.js · en.js 화면 문자열
 js/sync/             local · artifactdb · firebase
 js/views/            home · teacher · tv · parent
 js/ui/               character(SVG 임시) · speech(브라우저 음성)
-packs/               수업팩 JSON
+packs/               수업팩 JSON (packs/<id>.<lang>.json + index.json)
 tests/               unit(node:test) · e2e.mjs(Playwright)
 tools/               serve.mjs · build-artifact.mjs
 docs/                PACK-FORMAT.md

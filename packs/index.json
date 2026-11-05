@@ -2,10 +2,10 @@
   "packs": [
     {
       "id": "mind-weather",
-      "title": "오늘의 마음 날씨",
-      "domain": "정서 알아차리기",
-      "age": "만 4~5세",
-      "minutes": 15
+      "langs": {
+        "ko": { "title": "오늘의 마음 날씨", "domain": "정서 알아차리기", "age": "만 4~5세", "minutes": 15 },
+        "en": { "title": "Mood Weather", "domain": "Noticing feelings", "age": "Ages 4–5", "minutes": 15 }
+      }
     }
   ]
 }

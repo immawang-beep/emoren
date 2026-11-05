@@ -16,9 +16,16 @@ export function normalizeCode(s) {
   return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
 }
 
-export function fmtDate(ts) {
+// 날짜 표기 / date label. ko: 2026년 11월 5일, en: November 5, 2026
+const DATE_LOCALE = { ko: 'ko-KR', en: 'en-US' };
+export function fmtDate(ts, lang = 'ko') {
   const d = new Date(ts);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+  const loc = DATE_LOCALE[String(lang || '').slice(0, 2)] || String(lang || 'ko-KR');
+  try {
+    return new Intl.DateTimeFormat(loc, { year: 'numeric', month: 'long', day: 'numeric' }).format(d);
+  } catch {
+    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
+  }
 }
 
 export function pageUrl(hash) {
