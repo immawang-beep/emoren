@@ -192,6 +192,40 @@ test('storyVars: 방 상태가 비어 있거나 없어도 0으로 채운다', ()
   }
 });
 
+test('storyVars: 선택지 이름에 $& · $1 · $$ · {n} 같은 글자가 있어도 글자 그대로 들어간다(replace 특수 패턴이 아니다)', () => {
+  const pack = twoChoice('ko');
+  pack.steps[1].options = [{ id: 'sunny', label: '$& 해님 $1' }, { id: 'rainy', label: '$$' }];
+  pack.steps[3].options = [{ id: 'light', label: '{n}' }, { id: 'heavy', label: '{label}' }, { id: 'warm', label: '따뜻함' }];
+  let s = newRoom('T', pack);
+  s = tally(s, 'weather', { sunny: 2, rainy: 1 });
+  s = tally(s, 'body', { light: 3, heavy: 1 });
+  const vars = storyVars(pack, s);
+  assert.equal(vars.weather_list, '$& 해님 $1 2명, $$ 1명', "'$&'는 '{label}'로, '$$'는 '$'로 바뀌면 안 된다");
+  assert.equal(vars.weather_lead, '$& 해님 $1');
+  assert.equal(vars.body_list, '{n} 3명, {label} 1명', '이름 속 {n}·{label}은 다시 치환하지 않는다');
+  assert.equal(vars.body_lead, '{n}');
+});
+
+test('storyVars: <id>_total 은 지금 선택지들의 합이다 — 집계에 남은 옛 선택지 id 는 세지 않는다', () => {
+  const pack = twoChoice('ko');
+  let s = newRoom('T', pack);
+  // 'gone' 은 선택지에 없다(수업팩을 고친 뒤 집계에 남은 id) / an option id no longer in the pack
+  s = tally(s, 'weather', { sunny: 2, rainy: 1, gone: 5 });
+  const vars = storyVars(pack, s);
+  assert.equal(vars.weather_total, 3, '2 + 1, gone 의 5 는 빠진다');
+  assert.equal(vars.weather_list, '해님 2명, 비 1명');
+  assert.equal(vars.weather_lead, '해님');
+  assert.equal('gone' in vars, false, '옛 id 는 변수로도 나오지 않는다');
+  assert.equal(renderTemplate('{weather_total}명 [[weather_total: 이야기]]', vars), '3명 이야기');
+  // 옛 id 만 남고 지금 선택지는 모두 0 이면 비어 있는 단계로 본다 / only stale ids left → the step counts as empty
+  const s2 = tally(newRoom('T', pack), 'body', { gone: 4 });
+  const vars2 = storyVars(pack, s2);
+  assert.equal(vars2.body_total, 0);
+  assert.equal(vars2.body_list, '조용한 하늘');
+  assert.equal(vars2.body_lead, '');
+  assert.equal(renderTemplate('[[body_total: 이야기]]x', vars2), 'x', '합계가 0 이라 조건문이 빠진다');
+});
+
 // ---------- summaryOf ----------
 
 test('summaryOf: 선택 단계가 없으면 null, 있으면 첫 번째 선택 단계 기준', () => {
