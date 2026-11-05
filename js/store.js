@@ -165,7 +165,7 @@ export function summaryOf(pack, s) {
   const max = Math.max(1, ...step.options.map((o) => t[o.id] || 0));
   return {
     step,
-    total: total(t),
+    total: step.options.reduce((a, o) => a + (Number(t[o.id]) || 0), 0), // 지금 선택지만 센다 / current options only
     rows: step.options.map((o) => ({ ...o, n: t[o.id] || 0, pct: Math.round(((t[o.id] || 0) / max) * 100) })),
   };
 }
