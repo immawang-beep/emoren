@@ -10,7 +10,8 @@
     "lint:constraints": "node tools/lint-constraints.mjs",
     "e2e": "node tests/e2e.mjs",
     "packs:check": "node tools/packs-check.mjs",
-    "build:artifact": "node tools/build-artifact.mjs"
+    "build:artifact": "node tools/build-artifact.mjs",
+    "shots": "node tools/shots.mjs"
   },
   "engines": {
     "node": ">=20"

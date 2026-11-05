@@ -144,6 +144,9 @@ export default {
   // [end qr]
 
   // studio.* — 수업팩 스튜디오 #studio / pack studio
+  'studio.soonTitle': '수업팩 스튜디오 — 준비 중',
+  'studio.soonDesc': '코드 없이 수업팩을 만드는 화면은 다음 판(v0.2.1)에 들어갑니다. 지금은 packs/ID.LANG.json을 복사해서 만들고 npm run packs:check로 확인하세요.',
+  'studio.soonFormat': '수업팩 형식 문서 보기',
   // [end studio]
 
   // record.* — 남는 기록 패널 / what-is-stored panel

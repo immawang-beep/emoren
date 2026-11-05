@@ -2,6 +2,8 @@
 
 🇰🇷 [한국어](README.ko.md) · Status: v0.2 · ![CI](https://github.com/immawang-beep/emoren/actions/workflows/ci.yml/badge.svg)
 
+> **Where v0.2 stands.** Shipped and tested: bilingual UI, the `#demo` playground with a ghost teacher, three lesson packs in ko/en with `npm run packs:check`, the `book` step (TV picture book + family page), the QR code on the TV waiting screen, the "what is stored" panel, clock-offset correction, WebAudio chimes, TV kiosk mode, print/PDF for the family page, docs/BRAIN.md and docs/DEPLOY.md. Not shipped yet: the no-code pack studio (`#studio` shows a placeholder; planned for v0.2.1).
+
 One phone drives a classroom TV character; children answer with cards and bodies, not screens. Every lesson is one JSON file.
 
 A teacher opens a remote on their phone, the classroom TV becomes a stage with a character, and the children hold up cards. The teacher taps the counts, the TV reacts, and at the end the class gets a picture book it made together. No frameworks, no build step, no accounts for children.
@@ -82,7 +84,7 @@ A pack is a list of steps. Six step types cover a lesson:
 Templates in `on_confirm` and `story` read the counts: `{sunny}` (one count), `{weather_total}`, `{weather_list}` ("3 Sunny, 2 Cloudy"), `{weather_lead}`, `{class}`, and `[[rainy: a line that is dropped when rainy is 0]]`. Full reference, including the writing rules for ages 4–5 and for English lines: [docs/PACK-FORMAT.md](docs/PACK-FORMAT.md).
 
 - `npm run packs:check` validates every pack and makes sure the language versions of one pack share the same step ids, option ids, types and order, and that every template variable matches a real option.
-- **Pack studio** at `#studio`: write a pack without code. A form editor with live validation, "preview on the TV" (the draft runs in the playground), and JSON export / import.
+- **Pack studio** (`#studio`, planned for v0.2.1 — today it shows a placeholder): a form editor with live validation, "preview on the TV" (the draft runs in the playground) and JSON export / import. Until then, copy a pack file and run `npm run packs:check`.
 
 ## Architecture
 
@@ -156,7 +158,7 @@ npm run e2e -- demo       # one scenario by name
 npm run packs:check       # all packs, both languages, templates
 ```
 
-The e2e scenarios open the TV and the phone as tabs of one browser and run whole lessons in Korean and English, the playground, the class book, the QR entry and the studio. Screenshots land in `dist/shots/`. CI (`.github/workflows/ci.yml`) runs all three on every push and pull request; the badge at the top shows `main`.
+The e2e scenarios open the TV and the phone as tabs of one browser and run whole lessons in Korean and English, the playground, the class book and the QR entry. Screenshots land in `dist/shots/`. CI (`.github/workflows/ci.yml`) runs all three on every push and pull request; the badge at the top shows `main`.
 
 ## Principles we keep
 

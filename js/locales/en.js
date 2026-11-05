@@ -146,6 +146,9 @@ export default {
   // [end qr]
 
   // studio.* — 수업팩 스튜디오 #studio / pack studio
+  'studio.soonTitle': 'Lesson pack studio — in progress',
+  'studio.soonDesc': 'The no-code pack editor ships in the next release (v0.2.1). For now, copy packs/ID.LANG.json and check it with npm run packs:check.',
+  'studio.soonFormat': 'Read the pack format',
   // [end studio]
 
   // record.* — 남는 기록 패널 / what-is-stored panel
