@@ -122,11 +122,12 @@ test('makeCode: crypto.getRandomValues가 있으면 그것을 쓰고 Math.random
     assert.equal(calls[0].length, 4);
     assert.equal(calls[1].length, 6);
   }));
-  // 큰 값은 알파벳 길이(31)로 나눈 나머지를 쓴다 / large values wrap modulo the alphabet length
-  const wrap = { getRandomValues(arr) { arr.set([0, 30, 31, 0xFFFFFFFF]); return arr; } };
+  // 큰 값은 알파벳 길이(31)로 나눈 나머지를 쓴다(0xFFFFFFFB가 받아들이는 가장 큰 값; 그 위는 아래 거부 테스트)
+  // large values wrap modulo the alphabet length (0xFFFFFFFB is the largest accepted value; see the rejection test)
+  const wrap = { getRandomValues(arr) { arr.set([0, 30, 31, 0xFFFFFFFB]); return arr; } };
   withGlobal('crypto', wrap, () => {
-    assert.equal(makeCode(), 'A' + ALPHABET[30] + 'A' + ALPHABET[0xFFFFFFFF % 31]);
-    assert.equal(makeCode(), 'A9AD');
+    assert.equal(makeCode(), 'A' + ALPHABET[30] + 'A' + ALPHABET[0xFFFFFFFB % 31]);
+    assert.equal(makeCode(), 'A9A9');
   });
 });
 
@@ -142,6 +143,30 @@ test('makeCode: crypto가 없거나 getRandomValues가 없으면 Math.random으�
     for (let i = 0; i < 100; i++) assert.match(makeCode(), /^[A-Z2-9]{4}$/, '진짜 Math.random으로도 알파벳 안의 글자만');
   });
   withGlobal('crypto', {}, () => withRandom(() => 0, () => assert.equal(makeCode(), 'AAAA')));
+});
+
+test('makeCode: 2^32 - (2^32 % 31) 이상인 난수는 버리고 그 자리만 다시 뽑는다(나머지 편향 없음)', () => {
+  const LIMIT = 2 ** 32 - (2 ** 32 % ALPHABET.length); // 4294967292 = 31 × 138547332
+  assert.equal(LIMIT, 0xFFFFFFFC);
+  assert.equal(LIMIT % ALPHABET.length, 0, '전제: 경계 아래의 값은 31개 글자에 정확히 같은 수만큼 나뉜다');
+  // crypto 경로: 첫 4개 중 둘이 거부 → 거부된 자리마다 1개짜리 배열로 다시 뽑고, 또 거부되면 또 뽑는다
+  // crypto path: two of the first four are rejected → each rejected slot is redrawn with a 1-element array until accepted
+  const seq = [[0, LIMIT, 0xFFFFFFFF, LIMIT - 1], [LIMIT], [1], [2]];
+  const sizes = [];
+  const fake = { getRandomValues(arr) { sizes.push(arr.length); arr.set(seq.shift()); return arr; } };
+  withGlobal('crypto', fake, () => withRandom(() => { throw new Error('Math.random이 호출됨'); }, () => {
+    assert.equal(makeCode(), 'ABC9', '거부된 자리는 다시 뽑은 값(B, C)으로, 받아들인 자리는 그대로(A, 9)');
+    assert.deepEqual(sizes, [4, 1, 1, 1], '4개를 한 번에 뽑고 거부된 자리마다 1개씩');
+    assert.equal(seq.length, 0);
+  }));
+  // Math.random 대체 경로도 32비트 값을 뽑아 같은 경계로 거른다 / the fallback draws 32-bit values and rejects the same way
+  withGlobal('crypto', undefined, () => {
+    const rs = [0, LIMIT, 0xFFFFFFFF, LIMIT - 1, LIMIT, 1, 2].map((x) => x / 2 ** 32);
+    withRandom(() => rs.shift(), () => {
+      assert.equal(makeCode(), 'ABC9');
+      assert.equal(rs.length, 0, 'Math.random을 7번(4 + 거부 3) 부른다');
+    });
+  });
 });
 
 // ---------- normalizeCode
@@ -212,6 +237,18 @@ test('fmtDate: Intl 자체가 실패해도 년/월/일 표기로 돌아간다', 
     Intl.DateTimeFormat = orig;
   }
   assert.equal(fmtDate(TS, 'en'), 'November 5, 2026', '되돌린 뒤에는 다시 Intl 표기');
+});
+
+test('fmtDate: 날짜가 아니면(NaN·undefined·Infinity·글자·Invalid Date) 던지지 않고 빈 문자열을 돌려준다', () => {
+  // 예전에는 catch 경로에서 'NaN년 NaN월 NaN일'이 나왔다 / used to render 'NaN년 NaN월 NaN일' through the catch path
+  for (const bad of [NaN, undefined, Infinity, -Infinity, 'not a date', '', new Date('nope'), {}]) {
+    for (const lang of ['ko', 'en', '???']) assert.equal(fmtDate(bad, lang), '', `${String(bad)} / ${lang}`);
+  }
+  assert.equal(fmtDate(), '', '인자가 없어도 빈 문자열');
+  const orig = Intl.DateTimeFormat;
+  Intl.DateTimeFormat = function () { throw new RangeError('no Intl here'); };
+  try { assert.equal(fmtDate(NaN, 'ko'), '', 'Intl이 없어도 NaN년이 아니라 빈 문자열'); } finally { Intl.DateTimeFormat = orig; }
+  assert.equal(fmtDate(TS, 'ko'), '2026년 11월 5일', '정상 값은 그대로');
 });
 
 // ---------- pageUrl
