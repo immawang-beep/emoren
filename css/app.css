@@ -218,6 +218,38 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
 /* ==== v0.2: 기능마다 자기 구역 안에만 규칙을 넣는다 / each feature adds rules only inside its own block ==== */
 
 /* ---------- demo: 플레이그라운드 #demo ---------- */
+/* 한 탭에 교실 TV(왼쪽, 16:9)와 강사 폰(오른쪽, 390px 폰 틀). 테두리 글은 토큰(다크 모드), TV 무대는 자기 룩 유지. */
+.demo { max-width: 1360px; margin: 0 auto; padding: 12px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 12px; min-width: 0; }
+.demo-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; min-width: 0; }
+.demo-bar .back { text-decoration: none; color: var(--fg); font-size: 22px; padding: 6px 10px; border-radius: 10px; }
+.demo-brand { display: flex; align-items: baseline; gap: 10px; flex: 1 1 auto; min-width: 0; flex-wrap: wrap; }
+.demo-brand .logo { font-family: var(--font-display); font-size: 24px; color: var(--pink-deep); line-height: 1.1; white-space: nowrap; }
+.demo-title { color: var(--muted); font-size: 15px; white-space: nowrap; }
+.demo-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 100%; min-width: 0; }
+.demo-pack { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); max-width: 100%; min-width: 0; }
+.demo-pack select { min-height: 38px; max-width: 100%; min-width: 0; border: 2px solid var(--line); border-radius: 12px; padding: 0 10px; font: inherit; font-size: 15px; background: var(--surface); color: var(--fg); }
+.demo-sub { margin: 0; color: var(--muted); font-size: 15px; }
+.demo-grid { display: grid; grid-template-columns: minmax(0, 1fr) 390px; gap: 20px; align-items: start; min-width: 0; }
+.demo-cap { font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.demo-tv { min-width: 0; }
+.demo-tv-root { container-type: inline-size; width: 100%; border-radius: 14px; overflow: hidden; background: #0F1B2D; box-shadow: 0 10px 30px rgba(43, 38, 34, .18); }
+body[data-view="demo"] .stage-wrap { position: relative; inset: auto; width: 100%; aspect-ratio: 16 / 9; background: none; }
+body[data-view="demo"] .stage { width: 100cqw; height: 56.25cqw; font-size: calc(100cqw / 80); }
+.demo-phone { min-width: 0; width: 100%; max-width: 390px; justify-self: end; }
+.phone-frame { width: 100%; height: clamp(480px, 100vh - 250px, 844px); border-radius: 36px; border: 1px solid var(--line); background: #2B2622; padding: 12px; box-shadow: 0 10px 30px rgba(43, 38, 34, .18); }
+.phone-screen { height: 100%; min-width: 0; border-radius: 26px; overflow: auto; overscroll-behavior: contain; background: var(--bg); color: var(--fg); }
+.phone-screen .teacher { padding-block: 12px 40px; }
+.phone-screen .tbar { top: 0; }
+.demo-foot { display: grid; gap: 8px; min-width: 0; }
+.demo-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.demo-actions [hidden] { display: none; }   /* .btn의 display가 hidden 속성을 이기지 않게 / keep hidden buttons hidden */
+.demo-status { margin: 0; font-size: 16px; min-height: 1.5em; }
+.demo-foot .hint { margin: 0; }
+@media (max-width: 899px) {
+  .demo-grid { grid-template-columns: minmax(0, 1fr); }
+  .demo-phone { justify-self: center; }
+  .phone-frame { height: clamp(480px, 80vh, 760px); }
+}
 /* [end demo] */
 
 /* ---------- book: 오늘 우리 반 책 ---------- */
