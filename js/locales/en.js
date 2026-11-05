@@ -117,6 +117,8 @@ export default {
   // [end book]
 
   // qr.* — TV 대기 화면 QR / TV waiting-screen QR
+  'qr.scan': 'Scan with your phone to open the remote',
+  'qr.alt': 'QR code of the teacher-phone link, lesson code {code}',
   // [end qr]
 
   // studio.* — 수업팩 스튜디오 #studio / pack studio

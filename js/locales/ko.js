@@ -115,6 +115,8 @@ export default {
   // [end book]
 
   // qr.* — TV 대기 화면 QR / TV waiting-screen QR
+  'qr.scan': '폰으로 찍으면 리모컨이 열려요',
+  'qr.alt': '강사 폰 리모컨 링크 QR, 수업 코드 {code}',
   // [end qr]
 
   // studio.* — 수업팩 스튜디오 #studio / pack studio
