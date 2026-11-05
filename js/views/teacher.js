@@ -4,9 +4,10 @@ import { esc, pageUrl, readLocal, writeLocal } from '../util.js';
 import { loadPack, DEFAULT_PACK } from '../pack.js';
 import { createSync } from '../sync/index.js';
 import {
-  newRoom, stamp, actions, currentStep, tallyFor, total, storyVars, renderTemplate, summaryOf, SYNC_LABEL,
+  newRoom, stamp, actions, currentStep, tallyFor, total, storyVars, renderTemplate, summaryOf, SYNC_LABEL, checkRoom,
 } from '../store.js';
 import { t, getLang } from '../i18n.js';
+import { recordSummary, renderRecordPanel } from '../ui/record.js'; // record: 남는 기록 패널 / what-is-stored panel
 
 const tt = t; // controlsFor() 안에서 지역변수 t(타이머)와 이름이 겹칠 때 쓰는 별칭
 
@@ -35,6 +36,12 @@ export async function renderTeacher(root, code, opts = {}) {
 
   let noteDraft = '';
   let notesOpen = false;
+  let recordOpen = false;   // record: 남는 기록 패널 열림 / what-is-stored panel open
+  let rawOpen = false;      // record: 원본 JSON 열림 / raw JSON open
+  let eraseArmed = false;   // record: '모두 지우기' 첫 탭 뒤 5초 동안 / erase armed for 5 s after the first tap
+  let erasedFlash = false;  // record: 방금 지웠다는 알림 / just-erased notice
+  let eraseTimer = null;
+  let flashTimer = null;
   let timerTick = null;
   let destroyed = false;
 
@@ -42,6 +49,8 @@ export async function renderTeacher(root, code, opts = {}) {
     const next = fn(state);
     if (!next || next === state) return;
     state = stamp(next);
+    const problems = checkRoom(state, pack); // record: 덫 — 어긋나면 경고만, 막지 않는다 / tripwire: warn, never block
+    if (problems.length) console.warn('[room] 상태 모양 / room shape:', problems);
     render();
     await sync.set(state);
   };
@@ -98,6 +107,7 @@ export async function renderTeacher(root, code, opts = {}) {
       </section>
       <ol class="steps muted">${pack.steps.map((s) => `<li>${esc(s.title)}</li>`).join('')}</ol>
       <button class="btn primary wide" type="button" data-act="start">${esc(t('teacher.start'))}</button>
+      ${recordPanel()}
     </div>`;
   }
 
@@ -123,6 +133,7 @@ export async function renderTeacher(root, code, opts = {}) {
         <button class="btn small" type="button" data-act="note">${esc(t('teacher.saveNote'))}</button>
         <ul>${state.notes.slice(-5).reverse().map((m) => `<li>${esc(m.text)}</li>`).join('')}</ul>
       </details>
+      ${recordPanel()}
     </div>`;
   }
 
@@ -187,7 +198,31 @@ export async function renderTeacher(root, code, opts = {}) {
         <a class="btn wide" href="${esc(parentUrl)}" target="_blank" rel="noopener">${esc(t('teacher.parentPreview'))}</a>
       </section>
       <button class="btn ghost wide" type="button" data-act="reset">${esc(t('teacher.reset'))}</button>
+      ${recordPanel()}
     </div>`;
+  }
+
+  // record: 남는 기록 패널 — 세 패널(대기·진행·끝) 맨 아래에 같은 블록 / the same block at the bottom of all three panels
+  function recordPanel() {
+    return renderRecordPanel(recordSummary(pack, state), {
+      syncLabel: SYNC_LABEL[sync.kind] || sync.kind, armed: eraseArmed, erased: erasedFlash, open: recordOpen, rawOpen,
+    });
+  }
+
+  // record: '모두 지우기'는 두 번 탭 — 첫 탭은 5초 동안 무장, 그 안에 또 누르면 같은 코드·같은 팩으로 새 방(actions.reset)
+  function onErase() {
+    clearTimeout(eraseTimer);
+    if (!eraseArmed) {
+      eraseArmed = true;
+      eraseTimer = setTimeout(() => { eraseArmed = false; render(); }, 5000);
+      render();
+      return;
+    }
+    eraseArmed = false;
+    erasedFlash = true;
+    clearTimeout(flashTimer);
+    flashTimer = setTimeout(() => { erasedFlash = false; render(); }, 4000);
+    dispatch((s) => actions.reset(s, pack));
   }
 
   function remaining(t) {
@@ -219,6 +254,7 @@ export async function renderTeacher(root, code, opts = {}) {
         else if (act === 'confirm' && step) dispatch((s) => actions.confirm(s, step.id));
         else if (act === 'timer' && step) dispatch((s) => actions.startTimer(s, step.id, opts.timerSec || step.timer_sec));
         else if (act === 'reset') dispatch((s) => actions.reset(s, pack));
+        else if (act === 'erase') onErase();
         else if (act === 'note') {
           const ta = root.querySelector('[data-note]');
           const text = ta ? ta.value : '';
@@ -247,6 +283,10 @@ export async function renderTeacher(root, code, opts = {}) {
     if (ta) ta.addEventListener('input', () => { noteDraft = ta.value; });
     const det = root.querySelector('details.notes');
     if (det) det.addEventListener('toggle', () => { notesOpen = det.open; });
+    const rec = root.querySelector('details.record');
+    if (rec) rec.addEventListener('toggle', () => { recordOpen = rec.open; });
+    const raw = root.querySelector('details.rec-raw');
+    if (raw) raw.addEventListener('toggle', () => { rawOpen = raw.open; });
   }
 
   render();
@@ -254,6 +294,8 @@ export async function renderTeacher(root, code, opts = {}) {
     destroy() {
       destroyed = true;
       clearInterval(timerTick);
+      clearTimeout(eraseTimer);
+      clearTimeout(flashTimer);
       unsub();
       sync.close();
     },
