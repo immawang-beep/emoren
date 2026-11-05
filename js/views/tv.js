@@ -8,6 +8,8 @@ import { createCharacter } from '../ui/character.js';
 import { speak, stop as stopSpeech, unlock, isUnlocked, canSpeak } from '../ui/speech.js';
 import { t, getLang, setLang } from '../i18n.js';
 import { createClock } from '../clock.js';
+import { bookPages, currentBookPage } from '../book.js';
+import { renderBookPage } from '../ui/book.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -43,6 +45,7 @@ export async function renderTV(root, code, opts = {}) {
   let timerDoneKey = null;
   let speakToken = 0;
   let timerTick = null;
+  let bookTick = null;
   let destroyed = false;
   let sync = null;
   const clock = createClock();
@@ -119,11 +122,20 @@ export async function renderTV(root, code, opts = {}) {
     const step = state.phase === 'waiting' || state.phase === 'done' ? null : currentStep(pack, state);
     const key = `${state.phase}|${state.stepIndex}|${state.packId}|${pack.lang || state.lang || ''}`;
 
+    // 「오늘 우리 반 책」: 상태(book)와 강사 폰 시계 기준 지금(clock.now())으로 펼칠 쪽이 정해진다
+    let book = null;
+    if (step && step.type === 'book') {
+      const pages = bookPages(pack, state);
+      const i = currentBookPage(pages, state.book, clock.now(), pack.lang);
+      book = { page: pages[i] || null, i, n: pages.length };
+    }
+
     if (state.phase === 'waiting') setScene(key, waitingScene());
     else if (state.phase === 'done') setScene(key, doneScene());
     else if (step.type === 'choice') { setScene(key, choiceScene(step)); updateChoice(step); }
     else if (step.type === 'activity') setScene(key, activityScene(step));
     else if (step.type === 'story') setScene(key, storyScene(step));
+    else if (book && book.page) setScene(`${key}|book${book.i}`, renderBookPage(book.page, { lang: pack.lang, pageIndex: book.i, pageCount: book.n }));
     else if (step.type === 'closing') setScene(key, closingScene(step));
     else setScene(key, talkScene(step));
 
@@ -142,12 +154,14 @@ export async function renderTV(root, code, opts = {}) {
 
     // 대사
     const confirmed = step && step.type === 'choice' && state.confirmed[step.id];
-    const sk = `${key}|${state.speakSeq}|${confirmed ? 'c' : ''}`;
+    const sk = `${key}${book ? `|book${book.i}` : ''}|${state.speakSeq}|${confirmed ? 'c' : ''}`;
     if (state.phase === 'live' && sk !== speakKey) {
       speakKey = sk;
       const vars = storyVars(pack, state);
       if (confirmed) say([renderTemplate(step.on_confirm || '', vars)], 'happy');
       else if (step.type === 'story') say([renderTemplate(step.template, vars)], 'think', false);
+      // 책: 쪽이 바뀔 때마다 그 쪽을 읽는다. 이야기 쪽은 글이 이미 화면에 있으니 자막 없이
+      else if (book && book.page) say([book.page.line], book.page.kind === 'story' ? 'think' : 'happy', book.page.kind !== 'story');
       else say(step.lines || []);
     } else if (state.phase === 'done' && sk !== speakKey) {
       speakKey = sk;
@@ -157,6 +171,21 @@ export async function renderTV(root, code, opts = {}) {
     }
 
     scheduleTimer(step);
+    scheduleBook(step);
+  }
+
+  // 책 단계: 쪽은 상태에서 결정론적으로 정해지므로, 0.5초마다 지금 쪽을 다시 계산해 바뀌었을 때만 다시 그린다.
+  // 일시정지 중에는 넘기지 않는다. 뒤표지에서는 멈춘다 / recompute the page every 500 ms; no turning while paused
+  function scheduleBook(step) {
+    clearInterval(bookTick);
+    if (!step || step.type !== 'book' || state.phase !== 'live') return;
+    const pages = bookPages(pack, state);
+    let shown = currentBookPage(pages, state.book, clock.now(), pack.lang);
+    if (shown >= pages.length - 1) return;
+    bookTick = setInterval(() => {
+      const i = currentBookPage(pages, state.book, clock.now(), pack.lang);
+      if (i !== shown) { shown = i; render(); }
+    }, 500);
   }
 
   function setScene(key, html) {
@@ -268,6 +297,7 @@ export async function renderTV(root, code, opts = {}) {
     destroy() {
       destroyed = true;
       clearInterval(timerTick);
+      clearInterval(bookTick);
       speakToken++;
       stopSpeech();
       unsub();

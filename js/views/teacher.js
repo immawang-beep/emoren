@@ -7,6 +7,7 @@ import {
   newRoom, stamp, actions, currentStep, tallyFor, total, storyVars, renderTemplate, summaryOf, SYNC_LABEL,
 } from '../store.js';
 import { t, getLang } from '../i18n.js';
+import { bookPages, currentBookPage } from '../book.js';
 
 const tt = t; // controlsFor() 안에서 지역변수 t(타이머)와 이름이 겹칠 때 쓰는 별칭
 
@@ -36,6 +37,7 @@ export async function renderTeacher(root, code, opts = {}) {
   let noteDraft = '';
   let notesOpen = false;
   let timerTick = null;
+  let bookTick = null;
   let destroyed = false;
 
   const dispatch = async (fn) => {
@@ -45,6 +47,9 @@ export async function renderTeacher(root, code, opts = {}) {
     render();
     await sync.set(state);
   };
+
+  // 책 단계에서 지금 TV에 펼쳐져 있을 쪽 번호(강사 폰 시계 기준) / the book page the TV is showing now
+  const bookNow = (s) => currentBookPage(bookPages(pack, s), s.book, Date.now(), pack.lang);
 
   const unsub = sync.subscribe((s) => {
     if (!s || s.code !== code) return;
@@ -79,6 +84,7 @@ export async function renderTeacher(root, code, opts = {}) {
     </main>`;
     bind();
     scheduleTimer();
+    scheduleBook();
   }
 
   function waitingPanel() {
@@ -159,6 +165,20 @@ export async function renderTeacher(root, code, opts = {}) {
     if (step.type === 'story') {
       return `<blockquote class="preview">${esc(renderTemplate(step.template, storyVars(pack, state)))}</blockquote>`;
     }
+    if (step.type === 'book') {
+      const pages = bookPages(pack, state);
+      const n = pages.length;
+      const i = currentBookPage(pages, state.book, Date.now(), pack.lang);
+      return `
+      <div class="bookctl">
+        <div class="bookpos" aria-live="polite"><b data-bookpos>${esc(t('book.pageNo', { n: i + 1, total: n }))}</b><span class="muted" data-booktitle>${esc(pages[i] ? pages[i].title : '')}</span></div>
+        <div class="booknav">
+          <button class="btn" type="button" data-act="book-prev" ${i === 0 ? 'disabled' : ''}>${esc(t('book.prevPage'))}</button>
+          <button class="btn green" type="button" data-act="book-next" ${i >= n - 1 ? 'disabled' : ''}>${esc(t('book.nextPage'))}</button>
+        </div>
+        <p class="hint">${esc(t('book.autoHint'))}</p>
+      </div>`;
+    }
     if (step.type === 'closing') {
       return `${summaryBars()}<blockquote class="preview">${(step.lines || []).map(esc).join('<br>')}</blockquote>`;
     }
@@ -206,15 +226,37 @@ export async function renderTeacher(root, code, opts = {}) {
     }, 500);
   }
 
+  // 책 단계: 쪽이 저절로 넘어가므로 1초마다 쪽 표시와 이전·다음 버튼만 제자리에서 고친다(패널 전체를 다시 그리지 않는다)
+  // refresh only the page indicator and buttons in place every second while on the book step
+  function scheduleBook() {
+    clearInterval(bookTick);
+    if (state.phase !== 'live' || currentStep(pack, state).type !== 'book') return;
+    const pages = bookPages(pack, state);
+    bookTick = setInterval(() => {
+      const el = root.querySelector('[data-bookpos]');
+      if (!el) { clearInterval(bookTick); return; }
+      const i = currentBookPage(pages, state.book, Date.now(), pack.lang);
+      el.textContent = t('book.pageNo', { n: i + 1, total: pages.length });
+      const ttl = root.querySelector('[data-booktitle]');
+      if (ttl && pages[i]) ttl.textContent = pages[i].title;
+      const prev = root.querySelector('[data-act="book-prev"]');
+      const next = root.querySelector('[data-act="book-next"]');
+      if (prev) prev.disabled = i === 0;
+      if (next) next.disabled = i >= pages.length - 1;
+      if (i >= pages.length - 1) clearInterval(bookTick);
+    }, 1000);
+  }
+
   function bind() {
     const step = state.phase === 'live' || state.phase === 'paused' ? currentStep(pack, state) : null;
     root.querySelectorAll('[data-act]').forEach((btn) => {
       btn.addEventListener('click', () => {
         const act = btn.dataset.act;
-        if (act === 'start') dispatch((s) => actions.start(s));
+        if (act === 'start') dispatch((s) => actions.start(s, pack));
         else if (act === 'next') dispatch((s) => actions.next(s, pack));
-        else if (act === 'prev') dispatch((s) => actions.prev(s));
-        else if (act === 'pause') dispatch((s) => actions.togglePause(s));
+        else if (act === 'prev') dispatch((s) => actions.prev(s, pack));
+        else if (act === 'pause') dispatch((s) => actions.togglePause(s, s.book ? bookNow(s) : undefined));
+        else if (act === 'book-prev' || act === 'book-next') dispatch((s) => actions.bookPage(s, pack, bookNow(s) + (act === 'book-next' ? 1 : -1)));
         else if (act === 'respeak') dispatch((s) => actions.respeak(s));
         else if (act === 'confirm' && step) dispatch((s) => actions.confirm(s, step.id));
         else if (act === 'timer' && step) dispatch((s) => actions.startTimer(s, step.id, opts.timerSec || step.timer_sec));
@@ -254,6 +296,7 @@ export async function renderTeacher(root, code, opts = {}) {
     destroy() {
       destroyed = true;
       clearInterval(timerTick);
+      clearInterval(bookTick);
       unsub();
       sync.close();
     },

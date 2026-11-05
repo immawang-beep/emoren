@@ -47,7 +47,7 @@
 
 `list_item`·`list_empty`·`class_name`을 생략하면 팩의 `lang`에 따른 기본값을 쓴다(`js/store.js`의 `PACK_TEXT_DEFAULTS`). 기본값에 없는 언어는 영어 기본값으로 떨어진다.
 
-## 단계 유형 5가지
+## 단계 유형 6가지
 
 모든 단계에 공통: `id`(단계 안에서 유일), `type`, `title`(강사 폰·TV 상단), `cue`(선생님 할 일 한두 문장), `heading`(TV 큰 글씨, 없으면 `title`), `lines`(캐릭터가 단계 시작에 하는 말, 배열).
 
@@ -57,7 +57,11 @@
 | `choice` | 아이들이 고르고 선생님이 센다. TV에 막대가 자란다. '확정'하면 캐릭터가 `on_confirm`을 말한다 | `prompt`, `options`(2개 이상: `{ id, label, emoji, color, hint }`), `on_confirm` |
 | `activity` | 몸놀이. 타이머와 동작 카드 | `timer_sec`, `moves`(`{ emoji, text }`), `done_line`(타이머가 끝나면 하는 말) |
 | `story` | 오늘 숫자로 만든 이야기를 읽어 준다 | `template` |
+| `book` | 「오늘 우리 반 책」. TV가 그림책이 되어 표지(수업 이름·날짜) → 선택 단계마다 한 쪽(집계 수만큼 이모지 스탬프) → 몸놀이 → 오늘 이야기 → 뒤표지를 캐릭터가 읽으며 저절로 넘긴다. 강사 폰에서 이전·다음 쪽. 보호자 페이지에도 같은 책이 세로로 실린다 | `title` (선택: `cover_line`, `back_line`) |
 | `closing` | 마무리 인사. TV에 오늘 숫자 칩 | `lines` |
+
+`book`은 한 팩에 하나만, 마무리(`closing`) 바로 앞에 둔다. 쪽의 내용은 전부 방 상태(집계·이야기)에서 만들어지므로 팩에는 제목과 앞·뒤표지 한 줄만 적는다.
+`cover_line`·`back_line`을 생략하면 팩 언어의 기본 문구를 쓴다. 선택 쪽의 문장은 `{단계id_list}`와 같은 목록(`list_item`·`list_empty` 설정 그대로)으로 만들어진다. 이름은 어디에도 들어가지 않는다.
 
 ## 템플릿 문법
 
@@ -88,4 +92,4 @@
 
 ## 예시
 
-`packs/mind-weather.ko.json`(오늘의 마음 날씨)과 `packs/mind-weather.en.json`(Mood Weather)이 다섯 유형을 전부 쓴다. 복사해서 시작하면 된다.
+`packs/mind-weather.ko.json`(오늘의 마음 날씨)과 `packs/mind-weather.en.json`(Mood Weather)이 여섯 유형을 전부 쓴다. 복사해서 시작하면 된다.

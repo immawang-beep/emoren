@@ -221,6 +221,67 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
 /* [end demo] */
 
 /* ---------- book: 오늘 우리 반 책 ---------- */
+/* TV: 16:9 장면 한 장이 종이 한 쪽(무대는 밝은 룩 고정). 전역 .page(페이지 틀) 규칙을 여기서 덮어쓴다 / one paper page per TV scene */
+.book { height: 35em; display: grid; }
+.book .page {
+  position: relative; max-width: none; margin: 0; min-width: 0; height: 100%; overflow: hidden;
+  display: grid; gap: .6em; align-content: start;
+  padding: 1.3em 1.8em 2.2em 2.2em; border-radius: 1.2em;
+  background: #FFFDF8; color: #2B2622;
+  box-shadow: 0 .6em 1.8em rgba(40,60,90,.16), inset .55em 0 0 rgba(255,107,157,.4);
+}
+.book .page.cover, .book .page.back { align-content: center; justify-items: center; text-align: center; }
+.book .page.cover { background: linear-gradient(160deg, #FFF1F6 0%, #FFFDF8 50%, #EAF9F0 100%); }
+.book .page.back { background: linear-gradient(200deg, #EAF9F0 0%, #FFFDF8 50%, #FFF1F6 100%); box-shadow: 0 .6em 1.8em rgba(40,60,90,.16), inset .55em 0 0 rgba(22,179,100,.4); }
+.book .kicker { font-family: var(--font-body); font-size: 1.3em; letter-spacing: .12em; color: #E0497F; }
+.book .page.cover h1 { font-size: 4.2em; line-height: 1.2; margin: 0; text-wrap: balance; }
+.book .page.cover .sub { font-size: 1.7em; color: #4B5B6A; }
+.book .page h2 { font-size: 2.1em; line-height: 1.25; margin: 0; font-weight: 400; text-wrap: balance; }
+.book .page.choice { grid-template-rows: auto minmax(0, 1fr); }
+.book .shelf { display: grid; gap: .45em; align-content: stretch; min-width: 0; }
+.book .shelf .row { display: grid; grid-template-columns: 9.5em minmax(0, 1fr); gap: .8em; align-items: center; background: rgba(255,255,255,.75); border-radius: .9em; padding: .35em .8em; border-left: .4em solid var(--c, #16B364); }
+.book .who { display: flex; align-items: baseline; gap: .35em; font-size: 1.45em; min-width: 0; }
+.book .who .emoji { font-size: 1.25em; line-height: 1; }
+.book .who .label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.book .who .n { margin-left: auto; font-size: 1.25em; font-variant-numeric: tabular-nums; color: #E0497F; }
+.book .stamps { display: flex; flex-wrap: wrap; gap: .1em .15em; font-size: 1.6em; line-height: 1.1; }
+.book .stamps .more { font-family: var(--font-body); font-size: .75em; color: #5B6B7A; align-self: center; margin-left: .3em; }
+.book .page.activity { grid-template-columns: 1fr; align-items: start; }
+.book .cards { display: grid; grid-template-columns: 1fr 1fr; gap: .6em; font-size: 1.35em; }
+.book .cards div { background: rgba(255,255,255,.75); border-radius: .8em; padding: .5em .9em; display: flex; gap: .5em; align-items: center; }
+.book .cards span:first-child { font-size: 1.5em; line-height: 1; }
+.book .page.story p { font-size: 1.75em; line-height: 1.5; margin: 0; padding: 0; background: none; font-family: var(--font-body); }
+.book .page.back .big { font-size: 3.2em; line-height: 1.3; margin: 0; text-wrap: balance; }
+.book .pageno { position: absolute; right: 1.2em; bottom: .7em; font-family: var(--font-body); font-size: 1.1em; color: #5B6B7A; font-variant-numeric: tabular-nums; }
+/* 강사 폰: 쪽 표시와 이전·다음 쪽 / teacher phone: page indicator and page buttons */
+.bookctl { display: grid; gap: 10px; }
+.bookpos { display: flex; align-items: baseline; gap: 10px; min-width: 0; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 16px; }
+.bookpos b { font-family: var(--font-display); font-weight: 400; font-size: 28px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bookpos span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.booknav { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* 보호자 페이지: 같은 쪽을 세로로 쌓는다(폰 너비, 테마 토큰) / family page: the same pages stacked vertically */
+.book-stack { display: grid; gap: 14px; min-width: 0; }
+.book-stack .page { position: relative; max-width: none; margin: 0; min-width: 0; display: grid; gap: 10px; padding: 18px 18px 34px; background: var(--bg); border: 1px solid var(--line); border-left: 6px solid var(--pink); border-radius: 16px; font-size: 17px; line-height: 1.5; }
+.book-stack .page.cover, .book-stack .page.back { text-align: center; border-left-color: var(--green); justify-items: center; }
+.book-stack .kicker { font-size: 13px; letter-spacing: .08em; color: var(--pink-deep); }
+.book-stack .page h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0; text-wrap: balance; }
+.book-stack .page h2 { font-family: var(--font-display); font-weight: 400; font-size: 20px; margin: 0; text-wrap: balance; }
+.book-stack .page .sub { color: var(--muted); margin: 0; }
+.book-stack .shelf { display: grid; gap: 10px; }
+.book-stack .shelf .row { display: grid; gap: 4px; padding-left: 10px; border-left: 4px solid var(--c, var(--green)); }
+.book-stack .who { display: flex; align-items: baseline; gap: 6px; }
+.book-stack .who .emoji { font-size: 22px; }
+.book-stack .who .n { margin-left: auto; font-family: var(--font-display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.book-stack .stamps { display: flex; flex-wrap: wrap; gap: 2px 3px; font-size: 20px; line-height: 1.1; }
+.book-stack .stamps .more { font-size: 14px; color: var(--muted); align-self: center; margin-left: 4px; }
+/* 전역 TV 규칙(.activity 두 칸 격자, .story p 큰 글씨)과 .parent .story 카드 룩이 새어 들지 않게 명시적으로 덮어쓴다 */
+.book-stack .page.activity { grid-template-columns: 1fr; align-items: start; gap: 10px; }
+.book-stack .cards { display: grid; gap: 6px; }
+.book-stack .cards div { display: flex; gap: 8px; align-items: baseline; }
+.book-stack .page.story { background: var(--bg); border: 1px solid var(--line); border-left: 6px solid var(--pink); border-radius: 16px; padding: 18px 18px 34px; font-size: 17px; line-height: 1.5; }
+.book-stack .page.story p { margin: 0; padding: 0; background: none; border-radius: 0; font-size: 17px; line-height: 1.6; font-family: var(--font-body); }
+.book-stack .page.back .big { font-family: var(--font-display); font-size: 22px; margin: 0; }
+.book-stack .pageno { position: absolute; right: 12px; bottom: 8px; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 /* [end book] */
 
 /* ---------- qr: TV 대기 화면 QR ---------- */
