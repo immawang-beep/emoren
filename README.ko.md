@@ -3,6 +3,10 @@
 🇬🇧 [English](README.md) · 상태: v0.2 · ![CI](https://github.com/immawang-beep/emoren/actions/workflows/ci.yml/badge.svg)
 
 > **v0.2 현황.** 완료·테스트됨: 한·영 UI, 유령 선생님이 진행하는 `#demo` 플레이그라운드, ko/en 수업팩 3개와 `npm run packs:check`, `book` 단계(TV 그림책 + 보호자 페이지), TV 대기 화면 QR, "남는 기록" 패널, 시계 보정, WebAudio 효과음, TV 키오스크, 보호자 페이지 인쇄·PDF, docs/BRAIN.md·docs/DEPLOY.md. 미완료: 코드 없이 팩을 만드는 스튜디오(`#studio`는 안내 화면만, v0.2.1 예정).
+>
+> **완료(main):** 한·영 UI · 유령 선생님 `#demo` · 수업팩 3개×ko/en + `packs:check` · `book` 단계 · TV QR · 남는 기록 패널 · 시계 보정·효과음·키오스크 · 보호자 페이지 인쇄 · BRAIN/DEPLOY 문서 · 접근성 수정 · 자동 생성 스크린샷.
+>
+> **미완료:** `#studio` 편집기(안내 화면만, v0.2.1) · 보안 보강 브랜치 `feat/m-sec`(미검증) · 테스트와 결합된 문장 다듬기 4건.
 
 강사 폰 한 대가 교실 TV의 캐릭터를 움직이고, 아이들은 화면 대신 카드와 몸으로 답합니다. 수업 하나는 JSON 한 장입니다.
 

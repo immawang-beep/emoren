@@ -6,6 +6,10 @@ All notable changes to emoren-classroom are listed here. The format follows Keep
 
 ## [Unreleased]
 
+- main에 병합됨(2026-11-05 마무리 푸시): 남는 기록 패널(`feat/record`), 시계 보정·효과음·키오스크(`feat/tvx`), docs/BRAIN.md·docs/DEPLOY.md·Pages 워크플로우(`feat/docs`), 접근성 감사·대비 수정(`feat/m-a11y`), t() 키 사용 검사(`feat/m-test-synclocal`), 전 팩 글쓰기 규칙 테스트(`feat/m-packfmt-en`), 요약 합계·날짜·코드 난수 다듬기(`feat/m-test-fuzz`), README 스크린샷·GIF(`npm run shots`), 대사·문구 다듬기.
+  - Merged into main in the final push: what-is-stored panel, clock offset · chimes · kiosk, BRAIN/DEPLOY docs + Pages workflow, a11y audit and contrast fixes, t() usage test, pack writing-rule tests, summary/date/code polish, README screenshots and GIFs, copy polish.
+- 브랜치로만 남음 / branch only: `feat/m-sec`(보안 보강, 미검증 / security hardening, unverified). 미착수 / not started: `#studio` 본 구현(v0.2.1).
+
 ## [0.2.0] - 2026-11-05
 
 첫 공개판. 한국어·영어 전면 지원, 기기 두 대 없이 10초 안에 전체 흐름을 보는 플레이그라운드, 수업 끝에 TV가 그림책이 되는 「오늘 우리 반 책」, 그리고 믿고 쓸 수 있는 공개 저장소(README·CI·라이선스·기여 안내).

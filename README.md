@@ -3,6 +3,10 @@
 🇰🇷 [한국어](README.ko.md) · Status: v0.2 · ![CI](https://github.com/immawang-beep/emoren/actions/workflows/ci.yml/badge.svg)
 
 > **Where v0.2 stands.** Shipped and tested: bilingual UI, the `#demo` playground with a ghost teacher, three lesson packs in ko/en with `npm run packs:check`, the `book` step (TV picture book + family page), the QR code on the TV waiting screen, the "what is stored" panel, clock-offset correction, WebAudio chimes, TV kiosk mode, print/PDF for the family page, docs/BRAIN.md and docs/DEPLOY.md. Not shipped yet: the no-code pack studio (`#studio` shows a placeholder; planned for v0.2.1).
+>
+> **Done (in `main`):** bilingual UI · `#demo` playground with ghost teacher · 3 packs × ko/en + `packs:check` · `book` step · TV QR · what-is-stored panel · clock offset, chimes, kiosk · family-page print · BRAIN/DEPLOY docs · a11y fixes · generated screenshots.
+>
+> **Not done:** `#studio` editor (placeholder screen, v0.2.1) · security hardening branch `feat/m-sec` (unverified) · 4 test-coupled copy tweaks.
 
 One phone drives a classroom TV character; children answer with cards and bodies, not screens. Every lesson is one JSON file.
 
