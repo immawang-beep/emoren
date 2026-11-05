@@ -112,6 +112,20 @@ export default {
   // ---- v0.2: 기능마다 자기 구역 안에만 키를 넣는다 / each feature adds keys only inside its own block ----
 
   // demo.* — 플레이그라운드 #demo / playground
+  'demo.title': 'Playground',
+  'demo.subtitle': 'Left: the classroom TV. Right: the teacher phone. Both run in this browser on the same lesson code.',
+  'demo.tvLabel': 'Classroom TV',
+  'demo.phoneLabel': 'Teacher phone',
+  'demo.packLabel': 'Lesson pack',
+  'demo.ghostRun': 'Run the ghost teacher',
+  'demo.ghostStop': 'Take over',
+  'demo.ghostIdle': 'The ghost teacher is ready. Press it to run a whole lesson by itself; any tap on the phone stops it.',
+  'demo.ghostRunning': 'Ghost teacher running · {step}',
+  'demo.ghostStopped': 'Ghost teacher stopped. The phone is yours now.',
+  'demo.ghostDone': 'The lesson is done. Open the family page, or replay with a fresh code.',
+  'demo.family': 'Open family page',
+  'demo.replay': 'Replay with a new code',
+  'demo.hint': 'In a real classroom the TV and the phone are separate devices. This screen just shows the whole flow at once.',
   // [end demo]
 
   // book.* — 오늘 우리 반 책 / class book
