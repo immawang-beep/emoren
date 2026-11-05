@@ -8,6 +8,7 @@
     "start": "node tools/serve.mjs",
     "test": "node --test tests/unit/*.test.mjs",
     "e2e": "node tests/e2e.mjs",
+    "packs:check": "node tools/packs-check.mjs",
     "build:artifact": "node tools/build-artifact.mjs"
   },
   "engines": {
