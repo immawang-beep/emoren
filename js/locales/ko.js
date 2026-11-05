@@ -40,6 +40,10 @@ export default {
   'home.packs.title': '수업팩',
   'home.packs.loading': '불러오는 중…',
   'home.packs.hint': '수업팩은 <code>packs/&lt;id&gt;.&lt;lang&gt;.json</code> 한 장으로 수업 전체를 정의합니다. 코드를 건드리지 않고 JSON만 바꿔 새 수업을 만듭니다.',
+  'home.demo.title': '10초 만에 보기',
+  'home.demo.desc': '교실 TV와 강사 폰을 한 화면에 띄우고, 유령 선생님이 수업 한 회기를 대신 진행합니다. 기기 두 대가 없어도 됩니다.',
+  'home.demo.open': '플레이그라운드 열기',
+  'home.studio.open': '수업팩 스튜디오에서 새 수업 만들기',
   'home.foot': '아이 이름이나 개인 정보는 어디에도 저장하지 않습니다. 기록은 반 전체 숫자와 이야기뿐입니다.',
 
   // 강사 폰
