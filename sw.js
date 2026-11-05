@@ -21,6 +21,7 @@ const SHELL = [
   'js/ui/character.js',
   'js/ui/speech.js',
   'js/util.js',
+  'js/vendor/qr.js',
   'js/views/demo.js',
   'js/views/home.js',
   'js/views/parent.js',
