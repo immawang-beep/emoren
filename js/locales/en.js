@@ -115,6 +115,15 @@ export default {
   // [end demo]
 
   // book.* — 오늘 우리 반 책 / class book
+  'book.coverLine': 'Here is the "{title}" book our class made today.',
+  'book.choiceLine': '{prompt} Our answers: {list}.',
+  'book.activityLine': 'We did {title} together.',
+  'book.backLine': 'Our class made this together.',
+  'book.pageNo': '{n} / {total}',
+  'book.prevPage': '← Previous page',
+  'book.nextPage': 'Next page →',
+  'book.autoHint': 'Pages turn by themselves while the character reads. You can also turn them with these buttons.',
+  'book.familyTitle': 'Our Class Book',
   // [end book]
 
   // qr.* — TV 대기 화면 QR / TV waiting-screen QR
