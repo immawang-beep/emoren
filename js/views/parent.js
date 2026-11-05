@@ -5,6 +5,8 @@ import { loadPack } from '../pack.js';
 import { createSync } from '../sync/index.js';
 import { storyVars, renderTemplate, summaryOf } from '../store.js';
 import { t, getLang, setLang } from '../i18n.js';
+import { bookPages } from '../book.js';
+import { renderBookStack } from '../ui/book.js';
 
 // opts.sync  동기화 방식 강제 / force a sync adapter
 export async function renderParent(root, code, opts = {}) {
@@ -33,6 +35,9 @@ export async function renderParent(root, code, opts = {}) {
       const text = story ? renderTemplate(story.template, storyVars(pack, state)) : '';
       const sum = summaryOf(pack, state);
       const home = pack.home || {};
+      // 「오늘 우리 반 책」: TV가 보여 준 쪽을 그대로 세로로. 이름 없이 반 전체 숫자와 이야기뿐 / the class book, stacked
+      const pages = bookPages(pack, state);
+      const book = pages.length ? `<section class="card"><div class="h">${esc(t('book.familyTitle'))}</div>${renderBookStack(pages, { lang: pack.lang })}</section>` : '';
       body = `
       <h1>${esc(t('parent.heading', { title: pack.title }))}</h1>
       <div class="asof-row"><p class="asof">${esc(fmtDate(state.endedAt || state.updatedAt, getLang()))}${sum ? ` · ${esc(t('parent.joined', { n: sum.total }))}` : ''}</p>
@@ -40,6 +45,7 @@ export async function renderParent(root, code, opts = {}) {
       ${sum ? `<section class="card"><div class="h">${esc(sum.step.title)}</div><div class="summary-bars">${sum.rows.map((r) => `
         <div class="r"><span>${esc(r.emoji || '')} ${esc(r.label)}</span><div class="track"><i style="--c:${esc(r.color || '#16B364')};width:${r.pct}%"></i></div><span class="n">${r.n}</span></div>`).join('')}</div></section>` : ''}
       ${text ? `<p class="story">${esc(text)}</p>` : ''}
+      ${book}
       ${home.tips ? `<section class="card"><div class="h">${esc(home.title || t('parent.homeTitle'))}</div><ul class="tips">${home.tips.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></section>` : ''}
       <p class="note">${esc(home.note || t('parent.noteDefault'))}</p>`;
     }
