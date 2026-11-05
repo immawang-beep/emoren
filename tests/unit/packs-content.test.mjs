@@ -31,7 +31,7 @@ const index = read('index.json');
 // ko characters per line (code points). Target is 32 (≈15 per breath, two breaths). Loosened to the measured
 // maximum in the existing pack: mind-weather.ko.json steps[0].lines[2] = 42, steps[5].lines[1] = 35.
 // Tighten back to 32 once those two lines are split.
-const KO_MAX_CHARS = 42;
+const KO_MAX_CHARS = 32;
 // en 한 줄 단어 수 / en words per line
 const EN_MAX_WORDS = 16;
 const MAX_LINES = 4;            // 한 단계에 네 줄까지 / at most four lines per step
@@ -50,7 +50,7 @@ const PRAISE_SCOLD = [/잘했어/, /틀렸/, /good job/i, /wrong answer/i];
 // 예외로 둔다(파일·경로·문장이 정확히 같을 때만). 문장을 고치면 이 예외도 지운다. 새로 쓰는 문장은 모두 걸린다.
 // The existing ko outro uses '잘했어'. Rather than editing the pack here, that exact sentence (same file, path and
 // text) is the only exception; remove it when the line is rewritten. Every new line is still checked.
-const KNOWN_PRAISE = new Set(['mind-weather.ko.json outro[0] 오늘 수업 끝! 모두 잘했어.']);
+const KNOWN_PRAISE = new Set();
 const DIGIT_RUN = /\d{9,}/;     // 전화번호 같은 숫자 열 / phone-number-like digit runs
 const AT_SIGN = /@/;            // 이메일·멘션 / e-mail addresses and mentions
 const OPTION_ID = /^[a-z][a-z0-9_-]*$/;

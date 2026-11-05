@@ -20,9 +20,9 @@
       "cue": "Gather the children so they can see the TV. Wave along when the character says hello.",
       "lines": [
         "Hello, friends! I'm Joanne.",
-        "Today we're going to find out that feelings have weather too.",
+        "Let's find out about mood weather today!",
         "Happy is sunny. Quiet is cloudy. Sad is rainy. And angry is stormy!",
-        "What's my mood weather right now? Let's think about it together."
+        "What's your weather right now? Let's find out!"
       ]
     },
     {
@@ -41,7 +41,7 @@
         { "id": "rainy", "label": "Rainy", "emoji": "🌧️", "color": "#5BA4E6", "hint": "sad or upset" },
         { "id": "stormy", "label": "Stormy", "emoji": "⛈️", "color": "#4A5A7A", "hint": "angry or frustrated" }
       ],
-      "on_confirm": "Today our class sky has {weather_list}. [[rainy: Rainy friends, that's okay. Flowers need rain to grow.]] [[stormy: Stormy friends, thank you for telling us about your angry feelings.]] Every kind of weather is a feeling, and every feeling matters!"
+      "on_confirm": "Today our class sky has {weather_list}. [[rainy: Rainy friends, thank you for showing me. Flowers need rain to grow.]] [[stormy: Stormy friends, thank you for telling us about your angry feelings.]] Every kind of weather is a feeling, and every feeling matters!"
     },
     {
       "id": "move",
@@ -52,7 +52,7 @@
       "timer_sec": 60,
       "lines": [
         "Now let's make the weather with our bodies!",
-        "When your teacher says a weather, you become that weather. Ready?"
+        "When your teacher says a weather, become it! Ready?"
       ],
       "moves": [
         { "emoji": "☀️", "text": "Sunny: make a big circle with your arms over your head" },
@@ -67,7 +67,7 @@
       "type": "story",
       "title": "Our class story today",
       "heading": "Our class sky today",
-      "cue": "The character reads a story made from today's numbers. Afterwards, ask: 'Which weather did our class have the most of?'",
+      "cue": "The character reads a story made from today's numbers. Afterwards, ask: 'Which weather did our class have most?'",
       "template": "Today the sky over {class} had {weather_list}. [[weather_lead: {weather_lead} was the biggest of all.]] Weather changes every day. What mood weather will visit tomorrow? Whatever the weather, the friends in {class} will be each other's umbrellas."
     },
     {
@@ -86,7 +86,7 @@
       "cue": "When the character finishes saying goodbye, tap Finish lesson. The family page link will be ready.",
       "lines": [
         "Thank you for showing me your mood weather today.",
-        "At home, try saying: 'My mood weather today was this!'",
+        "At home, tell someone your mood weather!",
         "See you next time. Bye-bye!"
       ]
     }
@@ -96,7 +96,7 @@
     "title": "Keep it going at home",
     "tips": [
       "Ask, 'What was your mood weather today?' Choosing from sunny, cloudy, rainy or stormy makes it easy to answer.",
-      "If your child says rainy or stormy, start with 'I see.' You can ask why later, or not at all.",
+      "If your child says rainy or stormy, start with 'I see.' You can ask why later.",
       "Share your own mood weather too. Knowing that grown-ups' weather changes helps children feel safe."
     ],
     "note": "This page shows only class totals and the class story. No individual child's choice is recorded."
