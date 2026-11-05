@@ -233,4 +233,9 @@ body[data-view="tv"] { overflow: hidden; background: #0F1B2D; }
 /* [end record] */
 
 /* ---------- kiosk: 키오스크 ---------- */
+/* 소리 켜기 버튼과 효과음 토글이 오른쪽 아래에 나란히 / unlock button and sfx toggle side by side, bottom right */
+.stage-ctl { position: absolute; right: 1.6em; bottom: 1.2em; z-index: 3; display: flex; align-items: center; gap: .6em; }
+.stage-ctl .unlock { position: static; }
+.sfx { font-size: 1.15em; width: 2.4em; height: 2.4em; padding: 0; border-radius: 50%; border: 0; display: grid; place-items: center; line-height: 1; cursor: pointer; background: #FF6B9D; color: #fff; box-shadow: 0 .4em 1em rgba(224, 73, 127, .3); }
+.sfx[aria-pressed="false"] { background: rgba(255,255,255,.7); color: #5B6B7A; box-shadow: 0 .3em .8em rgba(40, 60, 90, .12); }
 /* [end kiosk] */

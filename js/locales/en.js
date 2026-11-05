@@ -126,5 +126,7 @@ export default {
   // [end record]
 
   // kiosk.* — 효과음·키오스크·시계 / sfx, kiosk, clock
+  'tv.sfxOn': 'Sound effects on',
+  'tv.sfxOff': 'Sound effects off',
   // [end kiosk]
 };
