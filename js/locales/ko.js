@@ -112,6 +112,15 @@ export default {
   // [end demo]
 
   // book.* — 오늘 우리 반 책 / class book
+  'book.coverLine': '오늘 우리 반이 만든 「{title}」 책이에요.',
+  'book.choiceLine': '{prompt} {list}, 이렇게 대답했어요.',
+  'book.activityLine': '{title}, 몸으로 함께 했어요.',
+  'book.backLine': '우리 반이 함께 만들었어요.',
+  'book.pageNo': '{n} / {total}',
+  'book.prevPage': '← 이전 쪽',
+  'book.nextPage': '다음 쪽 →',
+  'book.autoHint': '쪽은 캐릭터가 읽는 동안 저절로 넘어가요. 이전·다음 쪽 버튼으로 직접 넘길 수도 있어요.',
+  'book.familyTitle': '오늘 우리 반 책',
   // [end book]
 
   // qr.* — TV 대기 화면 QR / TV waiting-screen QR

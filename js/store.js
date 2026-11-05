@@ -39,6 +39,7 @@ export function newRoom(code, pack) {
     tallies: {},             // { [stepId]: { [optionId]: count } }
     confirmed: {},           // { [stepId]: true }
     timer: null,             // { stepId, startedAt, seconds }
+    book: null,              // { page, startedAt } — 「오늘 우리 반 책」에서 펼친 쪽(숫자만). book 단계가 아니면 null
     speakSeq: 0,             // 바뀔 때마다 TV가 현재 단계 대사를 다시 말한다
     startedAt: null,
     endedAt: null,
@@ -53,17 +54,39 @@ export function stamp(s) {
   return { ...s, rev: (s.rev || 0) + 1, updatedAt: Date.now() };
 }
 
+// 「오늘 우리 반 책」 쪽 수: 표지 + 선택·몸놀이·이야기 단계마다 한 쪽 + 뒤표지. book 단계가 없으면 0.
+// (js/book.js bookPages()와 같은 수. 순수 계산만 여기 두어 store ↔ book 순환 import를 피한다)
+export function bookPageCount(pack) {
+  const steps = (pack && pack.steps) || [];
+  if (!steps.some((st) => st.type === 'book')) return 0;
+  return 2 + steps.filter((st) => st.type === 'choice' || st.type === 'activity' || st.type === 'story').length;
+}
+
+// 단계에 들어설 때의 book 값: book 단계면 첫 쪽을 지금 편다, 아니면 null / book state on entering a step
+function bookAt(pack, i) {
+  const st = pack && pack.steps ? pack.steps[i] : null;
+  return st && st.type === 'book' ? { page: 0, startedAt: Date.now() } : null;
+}
+
 export const actions = {
-  start(s) {
-    return { ...s, phase: 'live', stepIndex: 0, startedAt: s.startedAt || Date.now(), speakSeq: s.speakSeq + 1 };
+  start(s, pack) {
+    return { ...s, phase: 'live', stepIndex: 0, startedAt: s.startedAt || Date.now(), book: bookAt(pack, 0), speakSeq: s.speakSeq + 1 };
   },
   next(s, pack) {
     const last = pack.steps.length - 1;
     if (s.stepIndex >= last) return actions.end(s);
-    return { ...s, phase: 'live', stepIndex: s.stepIndex + 1, timer: null, speakSeq: s.speakSeq + 1 };
+    const i = s.stepIndex + 1;
+    return { ...s, phase: 'live', stepIndex: i, timer: null, book: bookAt(pack, i), speakSeq: s.speakSeq + 1 };
   },
-  prev(s) {
-    return { ...s, phase: 'live', stepIndex: Math.max(0, s.stepIndex - 1), timer: null, speakSeq: s.speakSeq + 1 };
+  prev(s, pack) {
+    const i = Math.max(0, s.stepIndex - 1);
+    return { ...s, phase: 'live', stepIndex: i, timer: null, book: bookAt(pack, i), speakSeq: s.speakSeq + 1 };
+  },
+  // 책 쪽 넘기기(강사 폰의 이전·다음 쪽). 쪽 번호는 [0, 쪽 수 - 1]로 자르고, 그 쪽을 지금 편 것으로 기록한다.
+  bookPage(s, pack, page) {
+    const last = Math.max(0, bookPageCount(pack) - 1);
+    const p = Math.min(Math.max(0, Math.floor(Number(page) || 0)), last);
+    return { ...s, book: { page: p, startedAt: Date.now() }, speakSeq: s.speakSeq + 1 };
   },
   tally(s, stepId, optionId, delta) {
     const t = { ...(s.tallies[stepId] || {}) };
@@ -76,16 +99,19 @@ export const actions = {
   startTimer(s, stepId, seconds) {
     return { ...s, timer: { stepId, startedAt: Date.now(), seconds } };
   },
-  togglePause(s) {
-    if (s.phase === 'live') return { ...s, phase: 'paused' };
-    if (s.phase === 'paused') return { ...s, phase: 'live' };
+  // bookPage(선택): 책 단계에서 멈출 때 지금 펴져 있는 쪽 번호. 쉬는 동안 쪽이 넘어가지 않도록 그 쪽을 다시 펴 두고,
+  // 돌아올 때도 같은 쪽을 처음부터 읽는다 / on the book step, freeze the shown page while paused and reread it on resume
+  togglePause(s, bookPage) {
+    const freeze = (page) => (s.book ? { page: Math.max(0, Math.floor(Number(page) || 0)), startedAt: Date.now() } : null);
+    if (s.phase === 'live') return { ...s, phase: 'paused', book: freeze(typeof bookPage === 'number' ? bookPage : s.book && s.book.page) };
+    if (s.phase === 'paused') return { ...s, phase: 'live', book: freeze(s.book && s.book.page) };
     return s;
   },
   respeak(s) {
     return { ...s, speakSeq: s.speakSeq + 1 };
   },
   end(s) {
-    return { ...s, phase: 'done', endedAt: Date.now(), timer: null, speakSeq: s.speakSeq + 1 };
+    return { ...s, phase: 'done', endedAt: Date.now(), timer: null, book: null, speakSeq: s.speakSeq + 1 };
   },
   note(s, text) {
     const clean = String(text || '').trim().slice(0, 300);
