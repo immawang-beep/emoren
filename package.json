@@ -1,6 +1,6 @@
 {
   "name": "emoren-classroom",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "강사 폰 한 대로 교실 TV와 AI 캐릭터가 함께 움직이는 수업 시스템",
