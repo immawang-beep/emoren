@@ -15,6 +15,7 @@ export async function renderParent(root, code, opts = {}) {
   let state = await sync.get();
   let pack = null;
   let destroyed = false;
+  let lastHtml = '';
 
   async function render() {
     if (destroyed) return;
@@ -42,19 +43,24 @@ export async function renderParent(root, code, opts = {}) {
       <h1>${esc(t('parent.heading', { title: pack.title }))}</h1>
       <div class="asof-row"><p class="asof">${esc(fmtDate(state.endedAt || state.updatedAt, getLang()))}${sum ? ` · ${esc(t('parent.joined', { n: sum.total }))}` : ''}</p>
         <button class="btn small" type="button" data-print>${esc(t('parent.print'))}</button></div>
-      ${sum ? `<section class="card"><div class="h">${esc(sum.step.title)}</div><div class="summary-bars">${sum.rows.map((r) => `
+      ${sum ? `<section class="card"><h2 class="h">${esc(sum.step.title)}</h2><div class="summary-bars">${sum.rows.map((r) => `
         <div class="r"><span>${esc(r.emoji || '')} ${esc(r.label)}</span><div class="track"><i style="--c:${esc(r.color || '#16B364')};width:${r.pct}%"></i></div><span class="n">${r.n}</span></div>`).join('')}</div></section>` : ''}
       ${text ? `<p class="story">${esc(text)}</p>` : ''}
       ${book}
-      ${home.tips ? `<section class="card"><div class="h">${esc(home.title || t('parent.homeTitle'))}</div><ul class="tips">${home.tips.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></section>` : ''}
+      ${home.tips ? `<section class="card"><h2 class="h">${esc(home.title || t('parent.homeTitle'))}</h2><ul class="tips">${home.tips.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></section>` : ''}
       <p class="note">${esc(home.note || t('parent.noteDefault'))}</p>`;
     }
-    root.innerHTML = `
-    <main class="page parent">
+    const html = `
       <header class="brand small"><div class="logo">${esc(t('common.appName'))}</div></header>
       ${body}
-      <p class="foot"><a href="#">${esc(t('common.home'))}</a></p>
-    </main>`;
+      <p class="foot"><a href="#">${esc(t('common.home'))}</a></p>`;
+    // 같은 내용이면 다시 그리지 않고, <main>은 그대로 둔 채 안쪽만 바꾼다: 수업이 끝나 이야기가 나타나면 보조 기술이 읽어 준다(aria-live).
+    // Skip identical re-renders and keep <main> in place, swapping only its content, so the story is announced (aria-live) when the lesson ends.
+    if (html === lastHtml) return;
+    lastHtml = html;
+    let main = root.querySelector('main.parent');
+    if (!main) { root.innerHTML = '<main class="page parent" aria-live="polite"></main>'; main = root.querySelector('main.parent'); }
+    main.innerHTML = html;
     // 인쇄·PDF 저장은 브라우저 인쇄 대화상자로 / print or save as PDF through the browser's print dialog
     const printBtn = root.querySelector('[data-print]');
     if (printBtn) printBtn.addEventListener('click', () => window.print());

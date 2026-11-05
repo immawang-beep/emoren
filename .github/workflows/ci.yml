@@ -31,9 +31,9 @@ jobs:
         run: npm run lint:constraints
       - name: Lesson packs (packs:check)
         run: npm run packs:check
-      - name: Install Playwright + jsQR (test-only dependencies; jsQR decodes the TV QR in the e2e)
+      - name: Install Playwright + jsQR + axe-core (test-only dependencies)
         run: |
-          npm install --no-save playwright@1.63.0 jsqr
+          npm install --no-save playwright@1.63.0 jsqr axe-core
           npx playwright install --with-deps chromium
       - name: Two-screen scenario (Playwright)
         env:
