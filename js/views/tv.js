@@ -1,6 +1,6 @@
 // 교실 TV 무대. 읽기만 한다. 16:9 한 장면, 왼쪽에 캐릭터, 오른쪽에 장면.
 // 상태가 바뀌면 장면을 그리고, speakSeq가 바뀌면 캐릭터가 그 단계의 대사를 말한다.
-import { esc, makeCode } from '../util.js';
+import { esc, makeCode, pageUrl } from '../util.js';
 import { loadPack } from '../pack.js';
 import { createSync } from '../sync/index.js';
 import { currentStep, tallyFor, leadOption, storyVars, renderTemplate, summaryOf, SYNC_LABEL } from '../store.js';
@@ -8,6 +8,7 @@ import { createCharacter } from '../ui/character.js';
 import { speak, stop as stopSpeech, unlock, isUnlocked, canSpeak } from '../ui/speech.js';
 import { t, getLang, setLang } from '../i18n.js';
 import { createClock } from '../clock.js';
+import { qrSvg } from '../vendor/qr.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -166,11 +167,14 @@ export async function renderTV(root, code, opts = {}) {
   }
 
   function waitingScene() {
+    // 강사 폰 링크의 QR. 방 링크만 담는다(개인 정보 없음) / QR of the teacher-phone link only
+    const qr = qrSvg(pageUrl('teacher-' + code), { label: t('qr.alt', { code }) });
     return `
     <div class="wait">
       <h1>${pack ? esc(pack.title) : esc(t('common.appName'))}</h1>
       <div class="bigcode">${esc(code)}</div>
       <p class="sub">${esc(t('tv.waitStep1'))} &nbsp; ${esc(t('tv.waitStep2'))}</p>
+      <div class="qrbox" data-qr>${qr}<p class="qrlabel">${esc(t('qr.scan'))}</p></div>
     </div>`;
   }
 
