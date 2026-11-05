@@ -2,6 +2,8 @@
 
 🇬🇧 [English](README.md) · 상태: v0.2 · ![CI](https://github.com/immawang-beep/emoren/actions/workflows/ci.yml/badge.svg)
 
+> **v0.2 현황.** 완료·테스트됨: 한·영 UI, 유령 선생님이 진행하는 `#demo` 플레이그라운드, ko/en 수업팩 3개와 `npm run packs:check`, `book` 단계(TV 그림책 + 보호자 페이지), TV 대기 화면 QR, "남는 기록" 패널, 시계 보정, WebAudio 효과음, TV 키오스크, 보호자 페이지 인쇄·PDF, docs/BRAIN.md·docs/DEPLOY.md. 미완료: 코드 없이 팩을 만드는 스튜디오(`#studio`는 안내 화면만, v0.2.1 예정).
+
 강사 폰 한 대가 교실 TV의 캐릭터를 움직이고, 아이들은 화면 대신 카드와 몸으로 답합니다. 수업 하나는 JSON 한 장입니다.
 
 선생님은 폰에서 리모컨을 열고, 교실 TV는 캐릭터가 있는 무대가 되고, 아이들은 카드를 듭니다. 선생님이 개수를 누르면 TV가 바로 반응하고, 수업이 끝나면 우리 반이 함께 만든 그림책 한 권이 남습니다. 프레임워크도, 빌드도, 아이 계정도 없습니다.
@@ -82,7 +84,7 @@ node tools/serve.mjs
 `on_confirm`과 `story`의 템플릿이 숫자를 읽습니다. `{sunny}`(개수 하나), `{weather_total}`, `{weather_list}`("해님 3명, 구름 2명"), `{weather_lead}`, `{class}`, 그리고 `[[rainy: rainy가 0이면 통째로 빠지는 문장]]`. 만 4~5세 대사와 영어판 대사를 쓰는 규칙까지 전부 [docs/PACK-FORMAT.md](docs/PACK-FORMAT.md)에 있습니다.
 
 - `npm run packs:check`는 모든 팩을 검증하고, 같은 팩의 언어판끼리 단계 id·선택지 id·유형·순서가 같은지, 템플릿 변수가 실제 선택지와 맞는지 확인합니다.
-- **수업팩 스튜디오** `#studio`: 코드 없이 팩을 만듭니다. 실시간 검증이 붙은 폼 편집기, 'TV에서 미리 보기'(초안이 플레이그라운드에서 돕니다), JSON 내려받기·불러오기.
+- **수업팩 스튜디오**(`#studio`, v0.2.1 예정 — 지금은 안내 화면만): 실시간 검증이 붙은 폼 편집기, 'TV에서 미리 보기'(초안이 플레이그라운드에서 돕니다), JSON 내려받기·불러오기. 그때까지는 팩 파일을 복사해 만들고 `npm run packs:check`로 확인합니다.
 
 ## 아키텍처
 
@@ -156,7 +158,7 @@ npm run e2e -- demo       # 이름으로 하나만
 npm run packs:check       # 모든 팩, 두 언어, 템플릿
 ```
 
-e2e 시나리오는 TV와 폰을 한 브라우저의 탭으로 열어 한국어·영어 수업 한 회기, 플레이그라운드, 우리 반 책, QR 입장, 스튜디오를 끝까지 돌립니다. 스크린샷은 `dist/shots/`에 남습니다. CI(`.github/workflows/ci.yml`)는 푸시와 풀 리퀘스트마다 세 가지를 모두 돌리고, 맨 위 배지가 `main`의 상태입니다.
+e2e 시나리오는 TV와 폰을 한 브라우저의 탭으로 열어 한국어·영어 수업 한 회기, 플레이그라운드, 우리 반 책, QR 입장을 끝까지 돌립니다. 스크린샷은 `dist/shots/`에 남습니다. CI(`.github/workflows/ci.yml`)는 푸시와 풀 리퀘스트마다 세 가지를 모두 돌리고, 맨 위 배지가 `main`의 상태입니다.
 
 ## 지키는 선
 
