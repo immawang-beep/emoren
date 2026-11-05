@@ -357,6 +357,15 @@ body[data-view="demo"] .stage { width: 100cqw; height: 56.25cqw; font-size: calc
 /* [end record] */
 
 /* ---------- kiosk: 키오스크 ---------- */
+/* 3초 가만히 있으면 커서를 숨긴다(js/ui/kiosk.js가 .idle을 붙인다) / cursor hides after 3 s idle */
+.stage.idle, .stage.idle * { cursor: none; }
+/* 소리 켜기 버튼과 효과음 토글이 오른쪽 아래에 나란히 / unlock button and sfx toggle side by side, bottom right */
+.stage-ctl { position: absolute; right: 1.6em; bottom: 1.2em; z-index: 3; display: flex; align-items: center; gap: .6em; }
+.stage-ctl .unlock { position: static; }
+.sfx { font-size: 1.15em; width: 2.4em; height: 2.4em; padding: 0; border-radius: 50%; border: 0; display: grid; place-items: center; line-height: 1; cursor: pointer; background: #FF6B9D; color: #fff; box-shadow: 0 .4em 1em rgba(224, 73, 127, .3); }
+.sfx[aria-pressed="false"] { background: rgba(255,255,255,.7); color: #5B6B7A; box-shadow: 0 .3em .8em rgba(40, 60, 90, .12); }
+/* 대기 화면의 작은 안내(무대는 항상 밝은 배경이라 고정 색) / small hint on the waiting screen; the stage is always light */
+.wait .hint { font-family: var(--font-body); font-size: 1.15em; color: #6B7B8A; margin: 1.4em 0 0; }
 /* [end kiosk] */
 
 /* ---------- print: 보호자 페이지 인쇄·PDF 저장 / family page print & save-as-PDF ---------- */
