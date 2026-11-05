@@ -9,6 +9,7 @@ import { speak, stop as stopSpeech, unlock, isUnlocked, canSpeak } from '../ui/s
 import { t, getLang, setLang } from '../i18n.js';
 import { createClock } from '../clock.js';
 import { createSfx } from '../ui/sfx.js';
+import { createKiosk } from '../ui/kiosk.js';
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -42,6 +43,7 @@ export async function renderTV(root, code, opts = {}) {
   const unlockBtn = stage.querySelector('[data-unlock]');
   const sfxBtn = stage.querySelector('[data-sfx]');
   const slot = stage.querySelector('.chr-slot');
+  const kiosk = createKiosk(stage);
 
   let chr = createCharacter(slot, {});
   let pack = null;
@@ -109,6 +111,7 @@ export async function renderTV(root, code, opts = {}) {
     sfx.unlock();
     unlockBtn.hidden = true;
     if (!opts.embedded) { try { if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); } catch { /* 전체 화면 불가 */ } }
+    if (!opts.embedded) kiosk.enter();
     speakKey = null; // 지금 단계 대사를 소리로 다시 들려준다
     render();
   });
@@ -197,6 +200,7 @@ export async function renderTV(root, code, opts = {}) {
       <h1>${pack ? esc(pack.title) : esc(t('common.appName'))}</h1>
       <div class="bigcode">${esc(code)}</div>
       <p class="sub">${esc(t('tv.waitStep1'))} &nbsp; ${esc(t('tv.waitStep2'))}</p>
+      ${!opts.embedded && document.fullscreenEnabled !== false ? `<p class="hint">${esc(t('tv.kioskHint'))}</p>` : ''}
     </div>`;
   }
 
@@ -296,6 +300,7 @@ export async function renderTV(root, code, opts = {}) {
       clearInterval(timerTick);
       speakToken++;
       stopSpeech();
+      kiosk.destroy();
       unsub();
       sync.close();
     },
