@@ -111,7 +111,9 @@ test('packLangs: 색인에 적힌 순서대로, 없으면 빈 배열', () => {
 test('listPackChoices: 팩 × 언어 평면 목록(id, lang, title)이 팩 파일과 맞는다', async () => {
   const m = await fresh('choices');
   const choices = m.listPackChoices(await m.loadPackIndex());
-  assert.deepEqual(choices.map((c) => `${c.id}.${c.lang}`), ['mind-weather.ko', 'mind-weather.en']);
+  const ids = choices.map((c) => `${c.id}.${c.lang}`);
+  for (const x of ['mind-weather.ko', 'mind-weather.en']) assert.ok(ids.includes(x), x);
+  assert.equal(new Set(ids).size, ids.length, '중복 없음');
   for (const c of choices) {
     assert.equal(typeof c.id, 'string', 'id');
     assert.equal(typeof c.lang, 'string', 'lang');

@@ -28,7 +28,7 @@ test('단위 테스트 → 플레이라이트 설치(한 번) → e2e 순서로 
   const install = yml.indexOf('npx playwright install --with-deps chromium');
   const e2e = yml.indexOf('run: npm run e2e');
   assert.ok(unit > -1, 'npm test');
-  assert.match(yml, /^\s+npm install --no-save playwright@\d+\.\d+\.\d+$/m, '버전을 못 박은 playwright 설치');
+  assert.match(yml, /^\s+npm install --no-save playwright@\d+\.\d+\.\d+( [a-z0-9@.\/_-]+)*$/m, '버전을 못 박은 playwright 설치(+ 테스트 전용 패키지)');
   assert.ok(install > -1, 'npx playwright install --with-deps chromium');
   assert.ok(e2e > -1, 'npm run e2e');
   assert.ok(unit < install && install < e2e, '순서: npm test < playwright install < npm run e2e');

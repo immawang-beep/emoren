@@ -57,7 +57,8 @@ const makeGenerators = (pack) => {
   return {
     start: () => [],
     next: () => [pack],
-    prev: () => [],
+    prev: () => [pack],
+    bookPage: (rnd) => [pack, int(rnd, 9) - 1],
     tally: (rnd) => { last = [pick(rnd, stepIds), pick(rnd, options)]; return [...last, rnd() < 0.4 ? -1 : 1]; },
     tallyNeg: () => [...last, -1],
     confirm: (rnd) => [pick(rnd, stepIds)],
@@ -71,7 +72,7 @@ const makeGenerators = (pack) => {
 };
 // 뽑힐 비율: 집계가 실제 수업에서 가장 잦으므로 더 자주 / tally is the most common real action, so it is drawn more often
 const MENU = ['start', 'next', 'next', 'prev', 'tally', 'tally', 'tally', 'tallyNeg', 'tallyNeg', 'confirm', 'startTimer',
-  'togglePause', 'togglePause', 'respeak', 'end', 'note', 'note', 'reset'];
+  'togglePause', 'togglePause', 'respeak', 'end', 'note', 'note', 'reset', 'bookPage'];
 const ACTION_NAMES = Object.keys(actions);
 
 // 상태의 모든 잎(leaf)을 걷는다: 숫자(유한)·불리언·null은 어디든, 문자열은 STRING_PATHS에만. book은 null 또는 숫자 객체.

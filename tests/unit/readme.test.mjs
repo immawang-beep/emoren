@@ -84,9 +84,16 @@ test('관찰 언어: 금지어가 없다 (한국어·영어 두 문서 모두)',
   }
 });
 
+// 저작권자 이름은 LICENSE에서 읽는다(테스트 코드에 적지 않는다) / owner names come from LICENSE, never spelled here
+function ownerNames() {
+  const lic = fs.readFileSync(path.join(ROOT, 'LICENSE'), 'utf8');
+  const seg = (lic.match(/Copyright \(c\) \d{4} ([^·\n]+)·/) || [, ''])[1].trim();
+  return [seg.replace(/\s*\(.*\)$/, ''), (seg.match(/\((.*)\)/) || [])[1]].filter(Boolean);
+}
+
 test('회사·후원사·모델 이름이 없다. 서명은 emoren / 이모렌', () => {
   for (const [lang, md] of Object.entries(docs)) {
-    for (const s of ['더멤버스', 'THE MEMBERS']) assert.ok(!md.includes(s), `${FILES[lang]}: "${s}"`);
+    for (const s of ownerNames()) assert.ok(!md.includes(s), `${FILES[lang]}: "${s}"`);
     assert.doesNotMatch(md, /anthropic/i, FILES[lang]);
     // 'claude.ai'는 배포 대상(아티팩트)이라 쓰이지만, 그 밖의 쓰임(모델·도우미 이름)은 없어야 한다.
     // 'claude.ai' names a deploy target; any other use would be a model or assistant name.
