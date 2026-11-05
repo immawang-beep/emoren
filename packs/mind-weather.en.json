@@ -1,0 +1,96 @@
+{
+  "id": "mind-weather",
+  "lang": "en",
+  "title": "Mood Weather",
+  "domain": "Noticing feelings",
+  "age": "Ages 4–5",
+  "minutes": 15,
+  "goal": "Children say how they feel using weather words, and notice that friends can have different mood weather on the same day.",
+  "materials": ["4 weather cards per child", "Classroom TV or big screen", "Teacher's smartphone"],
+  "character": { "name": "Joanne", "color": "#FF6B9D", "voice": { "rate": 0.95, "pitch": 1.2 } },
+  "list_item": "{n} {label}",
+  "list_empty": "a quiet sky",
+  "class_name": "our class",
+  "steps": [
+    {
+      "id": "hello",
+      "type": "talk",
+      "title": "Hello",
+      "heading": "Feelings have weather too!",
+      "cue": "Gather the children so they can see the TV. Wave along when the character says hello.",
+      "lines": [
+        "Hello, friends! I'm Joanne.",
+        "Today we're going to find out that feelings have weather too.",
+        "Happy is sunny. Quiet is cloudy. Sad is rainy. And angry is stormy!",
+        "What's my mood weather right now? Let's think about it together."
+      ]
+    },
+    {
+      "id": "weather",
+      "type": "choice",
+      "title": "My mood weather today",
+      "cue": "When the children hold up their cards, count each weather and tap +. Once everyone is counted, tap Confirm and the character responds.",
+      "prompt": "What's your mood weather right now?",
+      "lines": [
+        "What's the weather like inside you right now?",
+        "Pick one card and hold it up high!"
+      ],
+      "options": [
+        { "id": "sunny", "label": "Sunny", "emoji": "☀️", "color": "#FFB443", "hint": "happy and excited" },
+        { "id": "cloudy", "label": "Cloudy", "emoji": "☁️", "color": "#9DB4C8", "hint": "okay, kind of quiet" },
+        { "id": "rainy", "label": "Rainy", "emoji": "🌧️", "color": "#5BA4E6", "hint": "sad or upset" },
+        { "id": "stormy", "label": "Stormy", "emoji": "⛈️", "color": "#4A5A7A", "hint": "angry or frustrated" }
+      ],
+      "on_confirm": "Today our class sky has {weather_list}. [[rainy: Rainy friends, that's okay. Flowers need rain to grow.]] [[stormy: Stormy friends, thank you for telling us about your angry feelings.]] Every kind of weather is a feeling, and every feeling matters!"
+    },
+    {
+      "id": "move",
+      "type": "activity",
+      "title": "Weather moves",
+      "heading": "Let's make weather with our bodies!",
+      "cue": "Start the timer and call out one weather at a time. The children act it out with their bodies. When 60 seconds are up, the character wraps it up.",
+      "timer_sec": 60,
+      "lines": [
+        "Now let's make the weather with our bodies!",
+        "When your teacher says a weather, you become that weather. Ready?"
+      ],
+      "moves": [
+        { "emoji": "☀️", "text": "Sunny: make a big circle with your arms over your head" },
+        { "emoji": "☁️", "text": "Cloudy: wiggle your body, soft and squishy" },
+        { "emoji": "🌧️", "text": "Rainy: tap-tap-tap with your fingers" },
+        { "emoji": "⛈️", "text": "Stormy: stomp your feet. Boom!" }
+      ],
+      "done_line": "Wow, all the weather came to our class! Now let's sit back down."
+    },
+    {
+      "id": "story",
+      "type": "story",
+      "title": "Our class story today",
+      "heading": "Our class sky today",
+      "cue": "The character reads a story made from today's numbers. Afterwards, ask: 'Which weather did our class have the most of?'",
+      "template": "Today the sky over {class} had {weather_list}. [[weather_lead: {weather_lead} was the biggest of all.]] Weather changes every day. What mood weather will visit tomorrow? Whatever the weather, the friends in {class} will be each other's umbrellas."
+    },
+    {
+      "id": "bye",
+      "type": "closing",
+      "title": "Goodbye",
+      "heading": "Thank you for today!",
+      "cue": "When the character finishes saying goodbye, tap Finish lesson. The family page link will be ready.",
+      "lines": [
+        "Thank you for showing me your mood weather today.",
+        "At home, try saying: 'My mood weather today was this!'",
+        "See you next time. Bye-bye!"
+      ]
+    }
+  ],
+  "outro": ["That's all for today! Thank you, friends."],
+  "home": {
+    "title": "Keep it going at home",
+    "tips": [
+      "Ask, 'What was your mood weather today?' Choosing from sunny, cloudy, rainy or stormy makes it easy to answer.",
+      "If your child says rainy or stormy, start with 'I see.' You can ask why later, or not at all.",
+      "Share your own mood weather too. Knowing that grown-ups' weather changes helps children feel safe."
+    ],
+    "note": "This page shows only class totals and the class story. No individual child's choice is recorded."
+  }
+}

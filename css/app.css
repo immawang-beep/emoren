@@ -67,6 +67,14 @@ button, input, textarea { font: inherit; color: inherit; }
 .brand .logo { font-family: var(--font-display); font-size: 34px; color: var(--pink-deep); line-height: 1.1; }
 .brand.small .logo { font-size: 24px; }
 .brand .tag { margin: 0; color: var(--muted); }
+.brand-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+/* 언어 토글(KO / EN) */
+.langs { display: inline-flex; gap: 2px; padding: 3px; border: 2px solid var(--line); border-radius: 999px; background: var(--surface); flex: none; }
+.langs .pill { border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 14px; font-weight: 600; letter-spacing: .04em; min-height: 32px; padding: 0 12px; border-radius: 999px; cursor: pointer; }
+.langs .pill[aria-pressed="true"] { background: var(--pink); color: #fff; }
+/* 강사 카드: 수업팩·언어 고르기 */
+.packpick { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+.packpick select { min-height: 48px; border: 2px solid var(--line); border-radius: 14px; padding: 0 12px; font: inherit; font-size: 16px; background: var(--bg); color: var(--fg); }
 .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 12px; min-width: 0; }
 .card h2, .card .h { font-family: var(--font-display); font-weight: 400; margin: 0; font-size: 24px; text-wrap: balance; }
 .card p { margin: 0; }

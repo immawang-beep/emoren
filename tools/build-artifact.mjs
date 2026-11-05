@@ -1,6 +1,6 @@
 // index.html → dist/artifact.html
 // claude.ai 아티팩트는 문서 뼈대(doctype/html/head/body, charset, viewport)를 직접 씌우므로 벗겨서 낸다.
-// 나머지 파일(css, js, packs, assets)은 같은 상대 경로로 함께 올린다.
+// 나머지 파일(css, js, locales, packs/<id>.<lang>.json, assets)은 같은 상대 경로로 함께 올린다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -27,7 +27,7 @@ fs.writeFileSync(path.join(root, 'dist', 'artifact.html'), out.trim() + '\n');
 
 const files = [
   'css/app.css', 'assets/icon.svg',
-  'js/app.js', 'js/util.js', 'js/store.js', 'js/pack.js',
+  'js/app.js', 'js/util.js', 'js/store.js', 'js/pack.js', 'js/i18n.js', 'js/locales/ko.js', 'js/locales/en.js',
   'js/sync/index.js', 'js/sync/local.js', 'js/sync/artifactdb.js', 'js/sync/firebase.js',
   'js/ui/character.js', 'js/ui/speech.js',
   'js/views/home.js', 'js/views/teacher.js', 'js/views/tv.js', 'js/views/parent.js',

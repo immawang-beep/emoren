@@ -2,20 +2,44 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { newRoom, stamp, actions, currentStep, renderTemplate, storyVars, summaryOf, tallyFor } from '../../js/store.js';
+import { newRoom, stamp, actions, currentStep, renderTemplate, storyVars, summaryOf, tallyFor, packText } from '../../js/store.js';
 import { validatePack } from '../../js/pack.js';
 
-const pack = JSON.parse(fs.readFileSync(new URL('../../packs/mind-weather.json', import.meta.url), 'utf8'));
+const read = (f) => JSON.parse(fs.readFileSync(new URL(f, import.meta.url), 'utf8'));
+const pack = read('../../packs/mind-weather.ko.json');
+const packEn = read('../../packs/mind-weather.en.json');
+const index = read('../../packs/index.json');
 
-test('수업팩 형식 검사: 기본 팩은 통과한다', () => {
+test('수업팩 형식 검사: 기본 팩(ko, en)은 통과한다', () => {
   assert.equal(validatePack(pack), true);
+  assert.equal(validatePack(packEn), true);
+  assert.equal(pack.lang, 'ko');
+  assert.equal(packEn.lang, 'en');
+});
+
+test('언어별 팩은 같은 단계·선택지 id와 구조를 가진다', () => {
+  assert.equal(packEn.id, pack.id);
+  assert.deepEqual(packEn.steps.map((s) => [s.id, s.type]), pack.steps.map((s) => [s.id, s.type]));
+  const opts = (p) => p.steps.find((s) => s.type === 'choice').options.map((o) => o.id);
+  assert.deepEqual(opts(packEn), opts(pack));
+  assert.equal(packEn.title, 'Mood Weather');
+  assert.deepEqual(Object.keys(index.packs[0].langs), ['ko', 'en']);
+  assert.equal(index.packs[0].langs.ko.title, pack.title);
+  assert.equal(index.packs[0].langs.en.title, packEn.title);
 });
 
 test('수업팩 형식 검사: 잘못된 팩은 이유를 말한다', () => {
-  assert.throws(() => validatePack({ id: 'x', title: 'x', steps: [{ id: 'a', type: 'choice' }] }), /prompt 없음/);
-  assert.throws(() => validatePack({ id: 'x', title: 'x', steps: [{ id: 'a', type: 'dance' }] }), /알 수 없는 단계 유형/);
-  assert.throws(() => validatePack({ id: 'x', title: 'x', steps: [{ id: 'a', type: 'talk', lines: ['안녕'] }, { id: 'a', type: 'talk', lines: ['또'] }] }), /중복/);
-  assert.throws(() => validatePack({ id: 'x', title: 'x', steps: [{ id: 'a', type: 'activity' }] }), /timer_sec/);
+  const base = { id: 'x', lang: 'ko', title: 'x' };
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'a', type: 'choice' }] }), /prompt 없음/);
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'a', type: 'dance' }] }), /알 수 없는 단계 유형/);
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'a', type: 'talk', lines: ['안녕'] }, { id: 'a', type: 'talk', lines: ['또'] }] }), /중복/);
+  assert.throws(() => validatePack({ ...base, steps: [{ id: 'a', type: 'activity' }] }), /timer_sec/);
+  assert.throws(() => validatePack({ id: 'x', title: 'x', steps: [{ id: 'a', type: 'talk', lines: ['hi'] }] }), /lang 없음/);
+});
+
+test('방 상태에 수업팩 언어가 들어간다', () => {
+  assert.equal(newRoom('DEMO', pack).lang, 'ko');
+  assert.equal(newRoom('DEMO', packEn).lang, 'en');
 });
 
 test('수업 흐름: 대기 → 시작 → 단계 → 끝', () => {
@@ -78,6 +102,41 @@ test('집계가 비어 있으면 조용한 하늘', () => {
   assert.equal(vars.weather_list, '조용한 하늘');
   assert.equal(vars.weather_lead, '');
   assert.equal(renderTemplate('[[weather_lead: 보임]] 끝', vars), '끝');
+});
+
+test('영어 팩: list_item / list_empty / class_name 으로 이야기를 만든다', () => {
+  let s = newRoom('ENGL', packEn);
+  assert.equal(storyVars(packEn, s).weather_list, 'a quiet sky');
+  assert.equal(storyVars(packEn, s).class, 'our class');
+  s = actions.tally(s, 'weather', 'sunny', 1);
+  s = actions.tally(s, 'weather', 'sunny', 1);
+  s = actions.tally(s, 'weather', 'sunny', 1);
+  s = actions.tally(s, 'weather', 'cloudy', 1);
+  s = actions.tally(s, 'weather', 'cloudy', 1);
+  s = actions.tally(s, 'weather', 'rainy', 1);
+  const vars = storyVars(packEn, s);
+  assert.equal(vars.weather_list, '3 Sunny, 2 Cloudy, 1 Rainy');
+  assert.equal(vars.weather_lead, 'Sunny');
+  const story = packEn.steps.find((x) => x.type === 'story');
+  const text = renderTemplate(story.template, vars);
+  assert.match(text, /^Today the sky over our class had 3 Sunny, 2 Cloudy, 1 Rainy\. Sunny was the biggest of all\./);
+  assert.doesNotMatch(text, /\{|\[\[/);
+  const confirm = renderTemplate(packEn.steps[1].on_confirm, vars);
+  assert.match(confirm, /Rainy friends/);
+  assert.doesNotMatch(confirm, /Stormy friends/);
+});
+
+test('팩 문구 기본값: 팩 언어를 따르고, 팩에 적힌 값이 우선한다', () => {
+  assert.equal(packText({ lang: 'ko', steps: [] }, 'list_item'), '{label} {n}명');
+  assert.equal(packText({ lang: 'en', steps: [] }, 'list_item'), '{n} {label}');
+  assert.equal(packText({ lang: 'fr', steps: [] }, 'class_name'), 'our class', '모르는 언어는 영어 기본값');
+  assert.equal(packText({ steps: [] }, 'class_name'), '우리 반', 'lang이 없으면 한국어(이전 팩 호환)');
+  const custom = { lang: 'en', steps: pack.steps, list_item: '{label}×{n}', list_empty: 'nobody yet', class_name: 'the Sunflower room' };
+  let s = actions.tally(newRoom('X', custom), 'weather', 'rainy', 2);
+  const vars = storyVars(custom, s);
+  assert.equal(vars.weather_list, '비×2');
+  assert.equal(vars.class, 'the Sunflower room');
+  assert.equal(storyVars(custom, newRoom('X', custom)).weather_list, 'nobody yet');
 });
 
 test('일시정지 토글과 타이머, 메모', () => {

@@ -1,12 +1,12 @@
 // 서비스워커: 네트워크 우선, 끊기면 캐시. 교실 와이파이가 흔들려도 화면은 뜬다.
-const CACHE = 'emoren-classroom-v1';
+const CACHE = 'emoren-classroom-v2';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'css/app.css', 'assets/icon.svg',
-  'js/app.js', 'js/util.js', 'js/store.js', 'js/pack.js',
+  'js/app.js', 'js/util.js', 'js/store.js', 'js/pack.js', 'js/i18n.js', 'js/locales/ko.js', 'js/locales/en.js',
   'js/sync/index.js', 'js/sync/local.js', 'js/sync/artifactdb.js', 'js/sync/firebase.js',
   'js/ui/character.js', 'js/ui/speech.js',
   'js/views/home.js', 'js/views/teacher.js', 'js/views/tv.js', 'js/views/parent.js',
-  'packs/index.json', 'packs/mind-weather.json',
+  'packs/index.json', 'packs/mind-weather.ko.json', 'packs/mind-weather.en.json',
 ];
 
 self.addEventListener('install', (e) => {

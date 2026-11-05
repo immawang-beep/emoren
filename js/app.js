@@ -8,8 +8,10 @@ import { renderHome } from './views/home.js';
 import { renderTeacher } from './views/teacher.js';
 import { renderTV } from './views/tv.js';
 import { renderParent } from './views/parent.js';
+import { t, getLang } from './i18n.js';
 
 const app = document.getElementById('app');
+document.documentElement.lang = getLang();
 let current = null;
 let routeSeq = 0;
 
@@ -38,7 +40,7 @@ async function route() {
     current = next;
   } catch (e) {
     console.error(e);
-    app.innerHTML = `<main class="page"><section class="card"><h2>문제가 생겼어요</h2><p class="err">${esc(e && e.message)}</p><a class="btn" href="#">처음으로</a></section></main>`;
+    app.innerHTML = `<main class="page"><section class="card"><h2>${esc(t('common.errorTitle'))}</h2><p class="err">${esc(e && e.message)}</p><a class="btn" href="#">${esc(t('common.home'))}</a></section></main>`;
   }
 }
 

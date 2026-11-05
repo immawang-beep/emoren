@@ -3,10 +3,11 @@
 // 상태: idle(기본) | talk(말하는 중) | happy(기뻐함) | think(생각 중)
 
 import { esc } from '../util.js';
+import { t } from '../i18n.js';
 
 export function createCharacter(slot, { name = '조앤', color = '#FF6B9D' } = {}) {
   slot.innerHTML = `
-  <svg class="chr" viewBox="0 0 200 220" role="img" aria-label="${esc(name)} (임시 그림)" data-mood="idle">
+  <svg class="chr" viewBox="0 0 200 220" role="img" aria-label="${esc(t('common.characterAlt', { name }))}" data-mood="idle">
     <defs>
       <radialGradient id="chrG" cx="38%" cy="32%" r="72%">
         <stop offset="0" stop-color="#FFC1D6"/>
