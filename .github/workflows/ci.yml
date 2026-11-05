@@ -29,6 +29,8 @@ jobs:
         run: npm test
       - name: Constraint lint
         run: npm run lint:constraints
+      - name: Lesson packs (packs:check)
+        run: npm run packs:check
       - name: Install Playwright (test-only dependency)
         run: |
           npm install --no-save playwright@1.63.0
