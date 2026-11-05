@@ -27,7 +27,12 @@ function pickVoice(lang) {
   if (!canSpeak()) return null;
   const l = short(lang);
   const vs = speechSynthesis.getVoices() || [];
-  const same = vs.filter((v) => short(v.lang) === l);
+  // 같은 선호 순위 안에서는 기기 안 목소리(localService)를 네트워크 목소리보다 먼저: 교실 와이파이가 끊겨도 말한다.
+  // 안정 정렬이라 같은 종류끼리의 순서는 그대로다. localService가 없으면(undefined) 기기 안으로 본다.
+  // Within the same preference tier, on-device voices come before network ones (a stalled Wi-Fi still speaks).
+  // The sort is stable, so order within a group is kept; a missing localService counts as on-device.
+  const local = (v) => (v.localService !== false ? 0 : 1);
+  const same = vs.filter((v) => short(v.lang) === l).sort((a, b) => local(a) - local(b));
   const pref = PREFER[l] || /female/i;
   if (l === 'en') {
     // en-US / en-GB 먼저, 그 다음 아무 영어 목소리

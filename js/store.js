@@ -3,6 +3,7 @@
 // 상태는 JSON 하나로 끝난다: 어떤 동기화 방식(같은 브라우저 / 클라우드 / Firebase)이든 그대로 실어 나른다.
 
 import { t } from './i18n.js';
+import { normalizeCode } from './util.js';
 
 export const VERSION = 1;
 
@@ -104,8 +105,16 @@ export function currentStep(pack, s) {
   return pack.steps[i];
 }
 
+// 한 단계의 집계. 공유 저장소에서 온 값은 문자열일 수도 있으므로 0 이상의 정수만 돌려준다(유한하지 않은 값은 뺀다).
+// Counts for one step: non-negative integers only, whatever the shared document held (non-finite values are dropped).
 export function tallyFor(s, stepId) {
-  return (s && s.tallies && s.tallies[stepId]) || {};
+  const raw = (s && s.tallies && s.tallies[stepId]) || {};
+  const out = {};
+  for (const k of Object.keys(raw)) {
+    const n = Math.floor(Number(raw[k]));
+    if (Number.isFinite(n)) out[k] = Math.max(0, n) || 0;
+  }
+  return out;
 }
 
 export function total(t) {
@@ -148,12 +157,14 @@ export function storyVars(pack, s) {
 
 // 템플릿 문법: {변수} 치환, [[변수: 내용]] 은 변수가 0/빈값이면 통째로 빠진다.
 export function renderTemplate(tpl, vars) {
+  // 자기 키만 변수다: {constructor} 같은 상속 키는 글자 그대로 남는다 / own keys only, so {constructor} stays literal
+  const has = (k) => Object.hasOwn(vars, k);
   let out = String(tpl || '').replace(/\[\[(\w+):([\s\S]*?)\]\]/g, (m, k, inner) => {
-    const v = vars[k];
+    const v = has(k) ? vars[k] : undefined;
     const on = typeof v === 'number' ? v > 0 : Boolean(v);
     return on ? inner : '';
   });
-  out = out.replace(/\{(\w+)\}/g, (m, k) => (k in vars ? String(vars[k]) : m));
+  out = out.replace(/\{(\w+)\}/g, (m, k) => (has(k) ? String(vars[k]) : m));
   return out.replace(/[ \t]{2,}/g, ' ').replace(/\s+([.,!?])/g, '$1').trim();
 }
 
@@ -166,6 +177,65 @@ export function summaryOf(pack, s) {
   return {
     step,
     total: total(t),
-    rows: step.options.map((o) => ({ ...o, n: t[o.id] || 0, pct: Math.round(((t[o.id] || 0) / max) * 100) })),
+    rows: step.options.map((o) => ({ ...o, n: Number(t[o.id]) || 0, pct: Math.round(((t[o.id] || 0) / max) * 100) })),
   };
+}
+
+// 공유 저장소에서 온 방 문서를 그대로 믿지 않는다. 코드를 아는 클라이언트는 누구나 아티팩트 db·Firebase의 방 문서를
+// 쓸 수 있으므로, 화면에 넘기기 전에 아는 키만 맞는 타입으로 다시 만든다: 숫자·불리언·id·(메모 본문만) 문자열.
+// 객체가 아니거나 code가 없으면 null. book은 문서에 없으면 그대로 없다(undefined).
+// A room document from a shared adapter is rebuilt from known keys with coerced types before any view sees it
+// (any client that knows the code can write the document). Returns null for non-objects or a missing code.
+const ID = /^[a-z0-9_-]{1,32}$/i;
+const PHASES = ['waiting', 'live', 'paused', 'done'];
+const isId = (k) => typeof k === 'string' && ID.test(k) && k !== '__proto__';
+const int = (v, d = 0) => { const n = Math.floor(Number(v)); return Number.isFinite(n) ? n : d; };
+const nonNeg = (v) => Math.max(0, int(v));
+const num = (v) => { const n = Number(v); return Number.isFinite(n) ? Math.max(0, n) : 0; };
+const str = (v, max) => (v == null ? '' : String(v).slice(0, max));
+const count = (v) => { const n = Math.floor(Number(v)); return Number.isFinite(n) ? Math.max(0, n) || 0 : null; };
+const isObj = (v) => Boolean(v) && typeof v === 'object' && !Array.isArray(v);
+
+// { [id]: coerce(value) } — id가 아닌 키와 coerce가 null을 준 값은 뺀다 / keep id keys whose coerced value is not null
+function idMap(obj, coerce) {
+  const out = {};
+  if (!isObj(obj)) return out;
+  for (const k of Object.keys(obj)) {
+    if (!isId(k)) continue;
+    const v = coerce(obj[k]);
+    if (v !== null) out[k] = v;
+  }
+  return out;
+}
+
+export function sanitizeRoom(s) {
+  if (!isObj(s)) return null;
+  const code = normalizeCode(s.code);
+  if (!code) return null;
+  const timer = isObj(s.timer) && isId(s.timer.stepId)
+    ? { stepId: s.timer.stepId, startedAt: num(s.timer.startedAt), seconds: num(s.timer.seconds) }
+    : null;
+  const notes = (Array.isArray(s.notes) ? s.notes : [])
+    .filter((n) => isObj(n) && typeof n.text === 'string')
+    .map((n) => ({ t: int(n.t), text: n.text.slice(0, 300) }))
+    .slice(-50);
+  const out = {
+    v: int(s.v, VERSION),
+    code,
+    packId: str(s.packId, 32),
+    lang: str(s.lang, 16),
+    phase: PHASES.includes(s.phase) ? s.phase : 'waiting',
+    stepIndex: nonNeg(s.stepIndex),
+    tallies: idMap(s.tallies, (t) => (isObj(t) ? idMap(t, count) : null)),
+    confirmed: idMap(s.confirmed, (v) => Boolean(v)),
+    timer,
+    speakSeq: nonNeg(s.speakSeq),
+    startedAt: s.startedAt == null ? null : int(s.startedAt, null),
+    endedAt: s.endedAt == null ? null : int(s.endedAt, null),
+    notes,
+    rev: nonNeg(s.rev),
+    updatedAt: nonNeg(s.updatedAt),
+  };
+  if (s.book !== undefined) out.book = isObj(s.book) ? { page: nonNeg(s.book.page), startedAt: nonNeg(s.book.startedAt) } : null;
+  return out;
 }

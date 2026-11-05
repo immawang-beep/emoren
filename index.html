@@ -16,7 +16,10 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<!-- 웹 글꼴은 첫 화면을 막지 않는다: print로 받아 두었다가 다 오면 all로 바꾼다(와이파이가 멈춰도 화면은 뜬다) -->
+<!-- Web fonts never block first paint: fetched as print, switched to all once loaded (a stalled Wi-Fi still paints) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap"></noscript>
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>

@@ -10,6 +10,10 @@ export const STEP_TYPES = ['talk', 'choice', 'activity', 'story', 'book', 'closi
 
 const safeId = (id) => String(id || '').replace(/[^a-z0-9-]/gi, '').toLowerCase();
 const safeLang = (lang) => String(lang || '').replace(/[^a-z-]/gi, '').toLowerCase().split('-')[0];
+// 단계·선택지 id와 색은 그대로 HTML 속성(data-*, style)에 들어가므로 모양을 좁힌다.
+// Step/option ids and colors end up in HTML attributes (data-*, style), so their shape is restricted.
+const STEP_ID = /^[a-z][a-z0-9_-]{0,31}$/i;
+const COLOR = /^#[0-9a-f]{3,8}$/i;
 
 export async function loadPackIndex() {
   if (!indexPromise) {
@@ -98,10 +102,12 @@ export function validatePack(p) {
   if (!p.lang || !/^[a-z]{2,3}(-[A-Za-z0-9]+)?$/.test(String(p.lang))) errs.push('lang 없음 (예: ko, en) / missing lang');
   if (!p.title) errs.push('title 없음 / missing title');
   if (!Array.isArray(p.steps) || p.steps.length === 0) errs.push('steps 비어 있음 / steps empty');
+  if (p.character && p.character.color != null && !COLOR.test(String(p.character.color))) errs.push('character.color는 #hex / character.color must be #hex');
   const ids = new Set();
   let books = 0;
   for (const s of p.steps || []) {
     if (!s.id) errs.push('단계 id 없음 / missing step id');
+    else if (!STEP_ID.test(String(s.id))) errs.push(`단계 id는 영문으로 시작하는 영문·숫자·_·- 32자 이내 / step id must match [a-z][a-z0-9_-]{0,31}: ${String(s.id).slice(0, 40)}`);
     else if (ids.has(s.id)) errs.push(`단계 id 중복 / duplicate step id: ${s.id}`);
     ids.add(s.id);
     if (!STEP_TYPES.includes(s.type)) errs.push(`알 수 없는 단계 유형 / unknown step type: ${s.id} (${s.type})`);
@@ -112,8 +118,10 @@ export function validatePack(p) {
       const oids = new Set();
       for (const o of s.options || []) {
         if (!o.id || !o.label) errs.push(`선택지 id/label 없음 / option missing id/label: ${s.id}`);
+        else if (!STEP_ID.test(String(o.id))) errs.push(`선택지 id는 영문으로 시작하는 영문·숫자·_·- 32자 이내 / option id must match [a-z][a-z0-9_-]{0,31}: ${s.id}/${String(o.id).slice(0, 40)}`);
         if (oids.has(o.id)) errs.push(`선택지 id 중복 / duplicate option id: ${s.id}/${o.id}`);
         oids.add(o.id);
+        if (o.color != null && !COLOR.test(String(o.color))) errs.push(`선택지 color는 #hex / option color must be #hex: ${s.id}/${o.id}`);
       }
     }
     if (s.type === 'activity' && !(Number(s.timer_sec) > 0)) errs.push(`timer_sec 필요 / timer_sec required: ${s.id}`);
