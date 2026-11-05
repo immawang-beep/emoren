@@ -20,6 +20,7 @@ Thank you for helping classrooms run calmer, kinder 15-minute lessons. 한국어
 ```bash
 node tools/serve.mjs     # http://127.0.0.1:8787  (no install step)
 npm test                 # unit tests (node:test)
+npm run packs:check      # every lesson pack: format, ko/en twins, template variables, writing rules
 npm run e2e              # two-screen Playwright scenario (needs Chromium)
 ```
 
@@ -29,7 +30,7 @@ No frameworks, no build step, no runtime dependencies. Keep modules small and pl
 
 - One topic per PR, with a short description of what a teacher will notice.
 - CI must be green (unit + e2e).
-- If you add a pack, include the `index.json` entry and at least one screenshot of the TV story scene.
+- If you add a pack, ship both `ko` and `en`, include the `index.json` entry, make sure `npm run packs:check` passes, and attach at least one screenshot of the TV story scene.
 
 ---
 
@@ -37,4 +38,4 @@ No frameworks, no build step, no runtime dependencies. Keep modules small and pl
 
 - **수업팩**(어떤 언어든, `packs/<id>.<lang>.json`), **UI 번역**(`js/locales/<lang>.js`), **테스트가 있는 수정·작은 기능**을 환영합니다. 상태 모양이나 동기화 어댑터 인터페이스를 바꾸는 일은 먼저 이슈로 열어 주세요.
 - 아이가 보고 듣는 것의 원칙: 관찰 언어만(진단·검사·치료·판정 금지), 아이 이름·사진·음성·개인 답 저장 금지, 한 호흡 문장, 가로 16:9 큰 글씨, 이모지+이름, 보라 배경 금지.
-- 프레임워크·빌드·런타임 의존성 없음. 작은 모듈, 모든 동작에 테스트.
+- 프레임워크·빌드·런타임 의존성 없음. 작은 모듈, 모든 동작에 테스트. 수업팩을 더했으면 ko·en 두 언어판과 `index.json` 항목을 같이 넣고 `npm run packs:check`를 돌려 주세요.

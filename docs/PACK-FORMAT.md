@@ -47,7 +47,7 @@
 
 `list_item`·`list_empty`·`class_name`을 생략하면 팩의 `lang`에 따른 기본값을 쓴다(`js/store.js`의 `PACK_TEXT_DEFAULTS`). 기본값에 없는 언어는 영어 기본값으로 떨어진다.
 
-## 단계 유형 5가지
+## 단계 유형 6가지
 
 모든 단계에 공통: `id`(단계 안에서 유일), `type`, `title`(강사 폰·TV 상단), `cue`(선생님 할 일 한두 문장), `heading`(TV 큰 글씨, 없으면 `title`), `lines`(캐릭터가 단계 시작에 하는 말, 배열).
 
@@ -57,6 +57,7 @@
 | `choice` | 아이들이 고르고 선생님이 센다. TV에 막대가 자란다. '확정'하면 캐릭터가 `on_confirm`을 말한다 | `prompt`, `options`(2개 이상: `{ id, label, emoji, color, hint }`), `on_confirm` |
 | `activity` | 몸놀이. 타이머와 동작 카드 | `timer_sec`, `moves`(`{ emoji, text }`), `done_line`(타이머가 끝나면 하는 말) |
 | `story` | 오늘 숫자로 만든 이야기를 읽어 준다 | `template` |
+| `book` | 「오늘 우리 반 책」. TV 전체가 그림책이 된다. 쪽은 팩이 아니라 방 상태에서 만든다(표지 → 선택 단계마다 한 쪽 → 몸놀이 → 오늘 이야기 → 뒤표지). 한 팩에 하나, `closing` 바로 앞에 둔다 | `title` (선택: `cover_line`, `back_line` — 앞·뒤표지 한 줄) |
 | `closing` | 마무리 인사. TV에 오늘 숫자 칩 | `lines` |
 
 ## 템플릿 문법
@@ -86,6 +87,24 @@
 - 선택지 이름은 TV에 큰 글씨로 뜬다. 한 단어(Sunny / Cloudy / Rainy / Stormy)로.
 - `list_item`은 영어 어순에 맞춰 `"{n} {label}"`로 두면 "3 Sunny, 2 Cloudy"가 된다.
 
-## 예시
+## 확인하기: `npm run packs:check`
 
-`packs/mind-weather.ko.json`(오늘의 마음 날씨)과 `packs/mind-weather.en.json`(Mood Weather)이 다섯 유형을 전부 쓴다. 복사해서 시작하면 된다.
+`tools/packs-check.mjs`가 `packs/` 전체를 Node만으로 점검한다(의존성 없음, CI에서도 돈다). 걸리면 어디가 왜 틀렸는지 한국어·영어로 알려 준다.
+
+- 모든 `packs/<id>.<lang>.json`이 `validatePack`을 통과하고, 파일 이름의 `<id>`·`<lang>`이 안의 `id`·`lang`과 같다. 언어판은 둘 이상(ko·en).
+- 같은 `id`의 언어판은 **구조가 같다**: 단계 `id`·유형·순서, 선택 단계의 선택지 `id`와 순서, `timer_sec`, `moves` 수, `home.tips` 수.
+- `on_confirm`·`template`·`done_line`·`lines`·`cover_line`·`back_line` 안의 `{변수}`와 `[[변수: …]]`는 실제로 만들어지는 변수(선택지 `id`, `<단계>_total`·`_list`·`_lead`, `class`)만 쓰고, 모든 선택지를 1명으로 둔 상태로 렌더했을 때 `{`나 `[[`가 남지 않는다.
+- `packs/index.json`이 디스크에 있는 팩과 언어를 정확히 담고, 제목·영역·연령·분이 팩 파일과 같다.
+- 관찰 언어: 아이를 판단하는 낱말(도구 안의 `KO_FORBIDDEN`·`EN_FORBIDDEN` 목록)을 어떤 문자열에도 쓰지 않는다. 선택지 색에 보라색 계열이 없다. 전화번호 꼴 숫자나 `@`가 없다(수업팩에는 연락처를 적지 않는다).
+
+한 줄 길이·줄 수 같은 글쓰기 규칙은 단위 테스트(`tests/unit/packs.test.mjs`)가 본다.
+
+## 예시: 들어 있는 수업팩 3개
+
+| id | ko | en | 영역 | 선택지 · 활동 |
+| --- | --- | --- | --- | --- |
+| `mind-weather` | 오늘의 마음 날씨 | Mood Weather | 정서 알아차리기 | ☀️ 해님 · ☁️ 구름 · 🌧️ 비 · ⛈️ 천둥 · 날씨 몸놀이 60초 |
+| `feeling-guess` | 친구 마음 알아맞히기 | Guess the Feeling | 공감 | 😊 기쁨 · 😢 슬픔 · 😠 화남 · 😨 무서움 (선생님이 표정 카드를 보고 얼굴로 보여 준다) · 표정 따라 하기 45초 |
+| `traffic-light` | 마음 신호등 | Feelings Traffic Light | 진정하기 | 🔴 멈추기 · 🟡 숨쉬기 · 🟢 말하기 (아이가 고르는 도구, 판단하지 않는다) · 호흡 타이머 30초 |
+
+세 팩 모두 여섯 단계(`hello` → 선택 → 활동 → `story` → `book` → `bye`)로 모든 유형을 쓴다. 복사해서 시작하면 된다.

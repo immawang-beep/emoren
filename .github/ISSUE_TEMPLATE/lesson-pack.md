@@ -27,3 +27,4 @@ labels: lesson-pack
 - [ ] Observational language only (no diagnosis, test, treatment, ranking)
 - [ ] No child names or per-child data anywhere
 - [ ] One breath per line, ask-and-wait, thank instead of praise/scold
+- [ ] Both `ko` and `en` files, listed in `packs/index.json`, and `npm run packs:check` passes
