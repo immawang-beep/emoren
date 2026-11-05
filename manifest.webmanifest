@@ -1,13 +1,15 @@
 {
   "name": "이모렌 교실",
   "short_name": "이모렌 교실",
-  "description": "강사 폰 한 대로 교실 TV와 AI 캐릭터가 함께 움직이는 수업 시스템",
+  "description": "강사 폰 한 대로 교실 TV와 캐릭터가 함께 움직이는 수업 시스템 · One phone drives a classroom TV character; kids answer with cards, not screens.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#FFF8F3",
   "theme_color": "#FF6B9D",
   "lang": "ko",
+  "categories": ["education"],
   "icons": [
     { "src": "assets/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
   ]
